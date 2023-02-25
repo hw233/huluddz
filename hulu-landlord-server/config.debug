@@ -1,0 +1,38 @@
+env = "debug"
+include "config.path"
+
+thread = 4
+harbor = 0
+start = "main"	-- main script
+bootstrap = "snlua bootstrap"	-- The service for bootstrap
+enablessl = true
+enablecipher = true
+--cluster = root .. "clustername.lua"
+
+gameid 	= "qxd_hlddz"
+isTest = 1 --为 1 开启测试
+loglevel = 0
+process_id = 4
+db_mgr_num = 2 --db_mgr数量
+
+--root = "./"
+logpath = "."
+logger = "vscdebuglog"
+logservice = "snlua"
+
+--luaservice = root.."service/?.lua;"..root.."test/?.lua;"..root.."examples/?.lua;"..root.."test/?/init.lua"
+--lualoader = root .. "lualib/loader.lua"
+--lua_path = root.."lualib/?.lua;"..root.."lualib/?/init.lua"
+--lua_cpath = root .. "luaclib/?.so"
+--snax = root.."examples/?.lua;"..root.."test/?.lua"
+--cpath = root.."cservice/?.so"
+
+
+--本地调试打开下面2个,注释vscode调试相关参数
+--daemon = "./skynet.pid"
+--logger = "GameSvr"
+
+--vscode 调试打开下面2个,注释daemon 和 logger
+vscdbg_open = "$vscdbg_open"
+vscdbg_workdir = "$vscdbg_workdir"
+vscdbg_bps = [=[$vscdbg_bps]=]

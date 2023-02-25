@@ -1,0 +1,23 @@
+env = "clocal"
+include "config.path"
+
+thread = 32
+harbor = 0
+start = "main"	-- main script
+bootstrap = "snlua bootstrap"	-- The service for bootstrap
+enablessl = true
+enablecipher = true
+--cluster = root .. "clustername.lua"
+
+gameid 	= "qxd_hlddz"
+loglevel = 0
+process_id = 7
+
+--本地调试打开下面2个,注释vscode调试相关参数
+--daemon = "./skynet.pid"
+--logger = "GameSvr"
+
+
+--vscode 调试打开下面2个,注释daemon 和 logger
+vscdbg_open = "$vscdbg_open"
+vscdbg_workdir = "$vscdbg_workdir"

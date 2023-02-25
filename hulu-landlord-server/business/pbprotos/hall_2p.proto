@@ -1,0 +1,1019 @@
+package gameProtos;
+
+
+message Activity{
+    optional int32 id = 1;
+    optional int32 type = 2;
+    optional int32 subtype = 3;
+    optional int32 begintime = 4;
+    optional int32 endtime = 5;
+    optional string name = 6;
+    optional int32 level = 7;
+    optional int32 enable = 8;
+    optional int32 location = 9;
+}
+
+message C2s_Rsp_Heartbeat{
+    optional bool ok = 1;
+    optional int32 time = 2;
+}
+
+message C2s_Heartbeat{
+}
+// 请求自身信息
+message C2s_Rsp_Get_self_info{
+    optional Db_info db_info = 1;
+    optional bool can_bind = 2; // 能否绑定人
+    optional bool ad_switch = 3; // 广告开关状态
+    optional bool ios_pay_switch = 4; // ios 支付开关状态
+    optional bool android_pay_switch = 5; // android 支付开关状态
+    optional bool share_switch = 6; // 分享开关状态
+    optional int32 today_share_count = 7; // 今天分享次数
+    optional bool watch_ad_ok = 8; // 今天是否已经完成了 观看广告活动
+    optional int32 today_receive_aidc = 9; // 今天领取救助金的次数
+    optional int32 title_lv = 10;
+    optional int32 title_star = 11;
+    optional int32 title_score = 12;
+    optional int32 share_gamec = 13; // 今天分享游戏的次数
+    optional int32 show_what_sign = 14; // 1.新手签到  2.普通签到
+    optional bool default_gift_received = 15; // 默认礼包是否领取 
+    optional int32 pet_id = 16; //当前拥有的宠物ID 
+    optional Team2v2Info teaminfo = 17; //2v2 组队信息
+}
+// 请求自身信息
+message C2s_Get_self_info{
+}
+
+message C2s_Rsp_Get_server_time{
+    optional int32 time = 1;
+}
+
+message C2s_Get_server_time{
+}
+
+message C2s_Reconnect{
+    optional int32 index = 1;
+}
+
+message C2s_Rsp_Reconnect{
+    optional int32 diff = 1;
+    optional bool in_game = 2;
+}
+
+message C2s_Send_ip{
+    optional string ip = 1; //本地ip地址
+}
+//告诉服务器我点击更新了新版本
+message C2s_Update_version_count{
+    
+}
+//告诉服务器我是新版本
+message C2s_Have_new_version{
+
+}
+//发送app channel name
+message C2s_Send_channel{
+    optional string channel = 1;
+}
+
+//一键组局
+message C2s_Fuzzy_matching{
+    optional int32 game_id = 1;
+    optional string address = 2;
+    optional int32 place_id = 3;
+    optional bool luck_start = 4; //好牌开局开关，具体count由ads_data维护
+}
+
+message C2s_Rsp_Remove_matching{
+    optional bool result = 1;
+}
+
+message C2s_Remove_matching{
+}
+
+message C2s_Rsp_Mails{
+    repeated Mail mails = 1;
+}
+
+message C2s_Mails{
+}
+
+message C2s_Read_mail{
+    optional string mail_id = 1;
+}
+
+message C2s_Rsp_Read_mail{
+    optional int32 result = 1; //0:成功 1:未找到该邮件
+    optional string mail_id = 2;
+}
+
+message C2s_Receive_mail{
+    optional string mail_id = 1;
+}
+
+message C2s_Rsp_Receive_mail{
+    optional int32 result = 1; //0:成功 1:领取是吧 2:已经达到当日领取好友金币上线 3:领取的装扮为重复的已经分解为时装币
+    optional string mail_id = 2;
+    optional int32 coin_get_max = 3; //每日最多可以领取好友赠送嘻嘻币上限
+}
+
+message C2s_Use_goods{
+    optional int32 goods_id = 1;
+    optional bool use = 2; //使用还是取消使用
+}
+
+message C2s_Rsp_Use_goods{
+    optional bool result = 1; //1.找不到配置 2.不支持使用 3.房间里不能使用声望相关道具 4.道具为0 不能使用
+    optional int32 goods_id = 2; //银行存款
+}
+
+
+
+
+ // 提交留言
+message C2s_Submit_message{
+    optional string message = 1;
+}
+ // 提交留言
+message C2s_Rsp_Submit_message{
+    optional bool result = 1;
+    optional int32 curr_time = 2; //最后成功一条的时间
+}
+// 每日分享
+message C2s_Share_today_ok{
+    optional int32 share_type = 1; // 1. ... , 2. ...
+}
+// 每日分享
+message C2s_Rsp_Share_today_ok{
+    optional bool result = 1; // true 有奖励  false: 没有奖励
+    optional int32 today_share_count = 2;
+}
+//获取每日任务信息
+message C2s_Rsp_Dailytask{
+    repeated Task tasks = 1;
+    optional int32 dice_num = 2; //骰子数量
+}
+//获取每日任务信息
+message C2s_Dailytask{
+}
+//领取任务奖励
+message C2s_Receive_dailytask_reward{
+    optional int32 id = 1; // 任务ID
+    optional bool Double = 2;
+}
+//领取任务奖励
+message C2s_Rsp_Receive_dailytask_reward{
+    optional int32 result = 1; //0:领取成功 1:已经领取过 2:未达到领取条件
+    optional int32 id = 2; // 任务ID
+    optional int32 dice_num = 3; //骰子数量
+}
+//获取验证码
+message C2s_Phone_ver_code{
+    optional string phone = 1; // 手机号码
+}
+//获取验证码
+message C2s_Rsp_Phone_ver_code{
+    optional bool result = 1;
+    optional int32 e_info = 2;
+}
+// 绑定手机
+message C2s_Bind_phone{
+    optional string phone = 1; // 电话号码 
+    optional string code = 2; // 验证码
+}
+// 绑定手机
+message C2s_Rsp_Bind_phone{
+    optional bool result = 1;
+    optional int32 e_info = 2; //1:没有获取过验证码 2:验证码超时，请重新获取 3:验证码不正确 4:已经绑定
+}
+
+message Horse_Lamp{
+    optional int32 msg_id = 1;
+    optional int32 create_time = 2;
+    optional string msg = 3;
+}
+// 跑马灯
+message C2s_Rsp_Horse_lamp{
+    optional string horse_lamp = 1;
+}
+// 跑马灯
+message C2s_Horse_lamp{
+}
+//战斗内分享
+message C2s_Rsp_Share_game_ok{
+    optional bool result = 1; // true 有奖励  false: 没有奖励
+    optional int32 share_gamec = 2; // 今天分享游戏的次数
+}
+//战斗内分享
+message C2s_Share_game_ok{
+}
+
+message C2s_Receive_all_mail{
+    optional int32 type = 1; // 邮件类型
+}
+
+message C2s_Rsp_Receive_all_mail{
+    optional int32 result = 1;
+    optional int32 type = 2; //邮件类型 1:好友邮件 2:其它邮件
+    repeated Mail mails = 3; //该类型操作后的邮件
+}
+
+message C2s_Rsp_Title_info{
+    optional Title_tbl info = 1;
+}
+
+message C2s_Title_info{
+}
+
+message C2s_Realname_auth{
+    optional string idcard = 1; // 身份证号码
+    optional string name = 2; // 姓名
+}
+
+message C2s_Rsp_Realname_auth{
+    optional bool result = 1;
+    optional int32 e_info = 2; // 1: 已认证  2: 非法的身份证号码
+    optional int32 curr_age = 3; //年齡
+}
+
+message C2s_Deletemail{
+    optional string mailid = 1;
+}
+
+message C2s_Rsp_Deletemail{
+    optional int32 result = 1;
+    optional string mailid = 2;
+}
+
+message C2s_Delete_all_mail{
+    optional int32 type = 1;
+}
+
+message C2s_Rsp_Delete_all_mail{
+    optional int32 result = 1;
+    optional int32 type = 2; //邮件类型 1:好友邮件 2:其它邮件
+    repeated Mail mails = 3; //没有删除掉的邮件
+}
+// 领取传说对局20次的奖励
+message C2s_Rsp_Receive_cs_gamec_20{
+    optional bool result = 1;
+    optional int32 e_info = 2;
+}
+// 领取传说对局20次的奖励
+message C2s_Receive_cs_gamec_20{
+}
+
+
+message MonthCard{
+    optional int32 buy_time = 1; // 购买时间
+    optional string last_recevie_day = 2; // 上次领取日期 "20191213"
+}
+
+message LuckyCatAward{
+    optional int32 gold = 1; // 总的奖励金币
+    optional int32 multiple = 2; // 倍数 10~30  客户端自己 /10
+}
+// 进入界面时
+message C2s_Rsp_Lucky_cat{
+    optional int32 play_times = 1; // 今天已经招财次数
+    optional int32 all_times = 2; //  招财最大次数
+}
+// 进入界面时
+message C2s_Lucky_cat{
+}
+// 点击按钮后
+message C2s_Lucky_cat_play{
+    optional int32 play_type = 1; // 游戏次数 1 | 10
+    optional int32 mul = 2 ;// 招财倍率 1 |10 |100
+}
+// 点击按钮后
+message C2s_Rsp_Lucky_cat_play{
+    optional bool result = 1; // true成功招财 返回除1外的所有信息  false 无法招财只返回1错误信息
+    optional int32 e_info = 2; // 错误信息 1 钻石不足 2 vip等级不足 倍率异常 3 次数已满
+    repeated LuckyCatAward award_records = 3; // 历史奖励记录
+    optional int32 award_gold = 4; // 总的获得的金币
+    optional int32 play_times = 5; // 今天已经招财次数
+    optional int32 all_times = 6; // 招财最大次数
+}
+
+message C2s_Join_room{
+    optional string room_id = 1;
+    optional string address = 2;
+    optional int32 password = 3;
+}
+
+message C2s_Create_room_friend{
+    optional Pattern pattern = 1;
+    optional string place_nature = 2;
+    optional int32 needGlv = 3;
+    optional int32 password = 4;
+}
+
+message C2s_Rsp_Create_room_friend{
+    optional bool result = 1;  // 1 服务器即将关闭 ,10 已在房间中，8钻石不足,2金币不足
+    optional string place_nature = 2;
+    optional string room_id = 3;
+    optional string place_type = 4;
+    optional int32 e_info = 5;
+}
+
+
+//连接检查
+message C2s_Connect_check{
+
+}
+//连接检查
+message C2s_Rsp_Connect_check{
+    optional bool result = 1;
+}
+//进入游戏
+message C2s_Rsp_Enter_game_check{
+    optional bool result = 1;
+}
+//进入游戏
+message C2s_Enter_game_check{
+}
+
+message One_room{
+    optional string clubid = 1; //类型
+    optional string owner_name = 2; //房主名字
+    optional int32 playernum = 3; //房间最大人数
+    optional int32 curr_num = 4; //当前人数
+    optional bool password = 5; //是否有密码
+    optional string r_id = 6; //房间ID
+}
+//获取所有朋友局房间信息
+message C2s_Get_friend_rooms{
+    optional string room_id = 1;
+}
+//获取所有朋友局房间信息
+message C2s_Rsp_Get_friend_rooms{
+    repeated One_room room_infos = 1;
+}
+//更改房间密码
+message C2s_Change_password{
+    optional string room_id = 1;
+    optional int32 password = 2;
+}
+//更改房间密码
+message C2s_Rsp_Change_password{
+    optional bool result = 1;
+}
+//播放表情
+message C2s_Play_emotion{
+    optional int32 eid = 1; //表情ID
+    optional string tid = 2; //目标id
+}
+//播放表情
+message C2s_Rsp_Play_emotion{
+    optional int32 code = 1; //0:播放成功 1:道具不足 2:未拥有该表情 3:表情不存在
+}
+//设置入场表情
+message C2s_Set_enter_emotion{
+    optional int32 eid = 1; //表情ID
+}
+//设置入场表情
+message C2s_Rsp_Set_enter_emotion{
+    optional int32 code = 1; //0:设置成功 1:未拥有表情
+    optional int32 eid = 2; //:表情ID
+}
+
+message C2s_Set_derss{
+    optional int32 goods_id = 1;
+}
+
+message C2s_Rsp_Set_derss{
+    optional bool result = 1;
+    optional int32 goods_id = 2;
+}
+
+message C2s_Rsp_Get_derss{
+    optional bool result = 1;
+    repeated int32 curr_dress = 2;
+}
+
+message C2s_Get_derss{
+}
+//赠送玩家豆子
+message C2s_Send_gold{
+    optional string id = 1; //赠送到的玩家id
+}
+//赠送玩家豆子
+message C2s_Rsp_Send_gold{
+    optional bool result = 1;
+}
+
+message C2s_Set_sex{
+    optional int32 sex = 1; //玩家性别
+}
+
+message C2s_Rsp_Set_sex{
+    optional int32 result = 1; //0 设置成功 1 玩家性别已设置 2 参数不对
+    optional int32 sex = 2; //玩家性别
+}
+
+message C2s_Get_room_player_count{
+    optional int32 room_count = 1; //房间数量
+}
+
+message C2s_Rsp_Get_room_player_count{
+    repeated int32 player_count = 1; //玩家人数
+}
+//屏蔽字判断
+message C2s_Filter_sensitive_words{
+    optional string content = 1; //文本内容
+    optional int32 type = 2; //判断方式 1:有屏蔽字就返回 2.返回去除屏蔽字的内容
+}
+//屏蔽字判断
+message C2s_Rsp_Filter_sensitive_words{
+    optional int32 result = 1; //返回结果 0.可以读取内容(屏蔽字会变成*) 1.提示有屏蔽字
+    optional string content = 2; //返回内容
+}
+//获取排行榜信息
+message C2s_Get_ranklist_info{
+    optional int32 name = 1; // 排行榜名 (1.雀神榜 2.千王榜3.身价 4.家园 5.宠物)
+    optional int32 begin = 2; // 起始位置
+    optional int32 type = 3; // 排行榜类型 (1.好友 2.全国)
+    optional int32 num = 4; // 获取数量
+}
+//获取排行榜信息
+message C2s_Rsp_Get_ranklist_info{
+    optional int32 name = 1; // 排行榜名
+    repeated RankListInfo list = 2; // 玩家列表信息
+    optional RankListInfo self_info = 3; // 自己信息
+    optional int32 begin = 4; // 起始位置
+}
+//获取其他玩家信息
+message C2s_Get_other_info{
+    optional string user_id = 1; //获取玩家ID
+}
+//获取其他玩家信息
+message C2s_Rsp_Get_other_info{
+    optional Db_info db_info = 1; //玩家信息
+}
+//获取自身信息
+message C2s_Rsp_Get_myself_info{
+    optional Playinfo playinfo = 1; //玩家信息
+}
+//获取自身信息
+message C2s_Get_myself_info{
+}
+
+message C2s_Set_sex_pet_info{
+    optional int32 sex = 1; //玩家性别
+    optional int32 pet_id = 2; //宠物id
+}
+
+message C2s_Rsp_Set_sex_pet_info{
+    optional int32 result = 1; //0 设置成功 1 玩家性别已设置 2 参数不对
+    optional int32 sex = 2; //玩家性别
+    optional Pet_data pet_data = 3; //当前宠物数据
+    optional int32 confort_intimacy = 4; //舒适度对应的亲密值
+    optional int32 hunger_intimacy = 5; //饥饿对应的亲密值
+    optional int32 happy_intimacy = 6; //开心对应的亲密值
+    optional int32 cur_intimacy = 7; //当前亲密度
+}
+//切换半身像
+message C2s_Rsp_Change_half_photo{
+    optional bool half_photo = 1; //true半身，false or nil 普通
+}
+//切换半身像
+message C2s_Change_half_photo{
+}
+//获取兑换信息
+message C2s_Rsp_Entitys_info{
+    repeated Entity entitys = 1;
+    repeated Entity tenEntity = 2;
+}
+//获取兑换信息
+message C2s_Entitys_info{
+}
+//兑换实物
+message C2s_Exchange_entity{
+    optional int32 exchangeLv = 1; //实物ID
+    optional int32 phoneNum = 2; //手机号码
+}
+//兑换实物
+message C2s_Rsp_Exchange_entity{
+    optional bool result = 1; //兑换结果
+    optional int32 errorId = 2; //错误ID
+    optional Entity entity = 3; //返回记录
+}
+//举报他人
+message C2s_Tip_off_other{
+    optional string informer = 1; //举报人
+    optional string other_id = 2; //目标人
+    optional int32 reportType = 3; //举报类型1,2,3,4,5
+    optional string content = 4; //玩家描述
+
+}
+//举报他人
+message C2s_Rsp_Tip_off_other{
+    optional bool result = 1; //兑换结果
+}
+//获取银行信息
+message C2s_Rsp_Get_gold_bank{
+    optional int32 gold = 1; //自身金币
+    optional int32 bankgold = 2; //银行金币
+}
+//获取银行信息
+message C2s_Get_gold_bank{
+}
+//存储取出金币
+message C2s_Get_set_bankGold{
+    optional bool getSet = 1; //true存
+    optional int32 goldNum = 2; //数量
+}
+//存储取出金币
+message C2s_Rsp_Get_set_bankGold{
+    optional bool result = 1; //兑换结果
+    optional int32 errorid = 2; //错误原因
+    optional int32 bankgold = 3; //银行金币数
+}
+//收集信息
+message C2s_Get_phone_info{
+    optional string phone_name = 1; //型号
+    optional string phone_os = 2; //系统
+    optional int32 phone_version = 3; //游戏当前版本号
+    optional string phone_idfa = 4; //IDfa 数据
+}
+//设置昵称头像
+message C2s_Change_nickname_headimgurl{
+    optional int32 changeType = 1; //1为改昵称
+    optional string nickname = 2; //昵称
+    optional string headimgurl = 3; //头像
+}
+//设置昵称头像
+message C2s_Rsp_Change_nickname_headimgurl{
+    optional int32 result = 1; //0成功，1钻石不足，2空值
+    optional string nickname = 2; //昵称
+    optional string headimgurl = 3; //头像
+    optional int32 cn_num = 4; //改名次数
+}
+
+message GameRecord{
+    optional int32 placeId = 1; //场次ID
+    optional bool isWin = 2; //胜负
+    repeated IO_info playerIO = 3; //流水
+    optional Card_pack handCards = 4; //手牌
+    optional int32 time = 5; //记录生成时间
+    optional int32 win_gold = 6;
+    optional int32 rankScore = 7;
+}
+//获取战绩
+message C2s_Rsp_Get_20_game_record{
+    repeated GameRecord game_record = 1; //战绩
+}
+//获取战绩
+message C2s_Get_20_game_record{
+}
+//获取视频数据
+message C2s_Rsp_Get_ad_info{
+    optional int32 watch_adac = 1; //奖励领取次数
+    optional int32 endTime = 2; //下次能看的时间
+}
+//获取视频数据
+message C2s_Get_ad_info{
+}
+
+//开始播放广告
+message C2s_Begin_look_ad{
+    optional string scene_name = 1; //细分场景标签 games ...
+}
+
+// 视频播放上报-完成
+message C2s_Video_ad_report{    
+    optional string scene_name = 1; //细分场景标签 games ...
+}
+
+// 视频播放上报 返回
+message S2c_Video_ad_report_1{
+    optional int32 award_id = 1; //奖励ID
+    optional int32 endTime = 2; //下次能看的时间
+    optional bool result = 3; //领取结果true成功 
+    optional int32 watch_adac = 4; //奖励领取次数   
+    optional string scene_name = 5;    
+    optional int32 e_info =6;  // 0完成 ，1异常
+    optional PICK_CARD pick_card = 7;//翻牌豪礼
+}
+
+//当前界面状态
+message C2s_Set_curr_ui{
+    optional string currUI = 1; //当前UI
+}
+//获取服务器渠道
+message C2s_Rsp_Get_channel{
+    optional string channel = 1; //渠道名
+}
+//获取服务器渠道
+message C2s_Get_channel{
+}
+
+message C2s_Rsp_Get_bank_info{
+    optional int32 bankgold = 1; //银行存款
+    optional int32 level = 2; //银行等级，默认1
+    optional int32 addMax = 3; //封顶加成等级
+    optional int32 bankcoin = 4; //银行币
+    repeated int32 leveltime = 5; //银行等级时限-1为无限
+    optional float vip_derate = 6; //vip减免
+}
+
+message C2s_Get_bank_info{
+}
+//存款
+message C2s_Rsp_Save_bankgold{
+    optional int32 result = 1; //1为金币不足2为存储空间不足
+    optional int32 bankgold = 2; //银行存款
+    optional int32 curgold = 3; //本次存款金额
+    optional int32 bankcoin = 4; //银行币
+}
+//存款
+message C2s_Save_bankgold{
+}
+
+message C2s_Draw_bankgold{
+    optional int32 getgold = 1; //取的金币
+}
+
+message C2s_Rsp_Draw_bankgold{
+    optional int32 result = 1; //1为取款<=0|2为存款不足
+    optional int32 bankgold = 2; //银行存款
+}
+
+message C2s_Rsp_Bank_limit_upgrade{
+    optional int32 result = 1; //1为银行币不足
+    optional int32 addMax = 2; //加成等级
+    optional int32 bankcoin = 3; //银行币
+}
+
+message C2s_Bank_limit_upgrade{
+}
+
+message C2s_Rsp_Get_activity_list{
+    optional int32 result = 1;
+    repeated Activity list = 2;
+}
+
+message C2s_Get_activity_list{
+}
+
+message S2c_Byebye{
+    optional string what = 1;
+}
+
+message S2c_Rsp_Byebye{
+    optional string what = 1;
+}
+//更新玩家个性签名
+message S2c_Update_personal{
+    optional string pid = 1;
+    optional string personal = 2;
+}
+
+message Img_Notice{
+    optional int32 notice_id = 1;
+    optional string imgurl = 2;
+    optional int32 end_time = 3;
+}
+
+message S2c_All_img_notice{
+    repeated Img_Notice imgNotices = 1;
+}
+
+message S2c_New_img_notice{
+    optional Img_Notice imgNotice = 1;
+}
+
+message S2c_Img_notice_changed{
+    optional Img_Notice imgNotice = 1;
+}
+
+message S2c_Del_img_notice{
+    optional int32 notice_id = 1;
+}
+
+message S2c_Reconnect_end{
+
+}
+// 服务器关闭
+message S2c_Server_shutdown{
+}
+// 服务器通知 [ what = '服务器将在5分钟后关闭' ]
+message S2c_Server_notice{
+    optional string what = 1;
+    optional int32 num = 2;
+    optional bool atOnce = 3;
+    optional int32 effects = 4; //特效
+    optional int32 currLive = 5; //优先级
+}
+
+message S2c_Have_new_mail{
+}
+
+// 匹配报错
+message S2c_Fuzzy_matching_err{
+    optional int32 e_info = 1;
+}
+
+message S2c_Sync_invalid_headimg{
+    optional bool invalid_headimg = 1;
+}
+
+message S2c_Player_play_emotion{
+    optional int32 eid = 1; //表情ID
+    optional string pid = 2; //发送动画的玩家
+    optional string target_id = 3; //目标 动画的玩家
+}
+
+message S2c_Time_down{
+    optional int32 online_time = 1; //已遊戲時間（秒）
+    optional int32 desc = 2; //下线原因 21 时间不足 22 不在登录时间 不能登录 23 没有实名,时间限额
+    optional string channel = 3; //渠道信息
+}
+
+message S2c_Task_done{
+    optional int32 task_id = 1; //完成任务的id
+}
+//封号信息更新
+message S2c_Sync_forbid{
+    optional int32 forbid_time = 1; //封禁到的时间(大于0为被封禁到的时间) 
+    optional string forbid_reason = 2; //封禁理由
+}
+
+message Disassemble_data{
+    optional string itemid = 1; // 分解的时装id
+    optional int32 coin = 2; // 分解后获得的服饰币数量
+}
+//装扮分解通知
+message S2c_Disassemble_clothes{
+    repeated Disassemble_data disassembles = 1;
+}
+//邮件同步通知
+message S2c_Mail_sync{
+}
+//切换半身像
+message S2c_Change_half_photo_s{
+    optional string id = 1; //id
+    optional bool half_photo = 2; //true半身，false or nil 普通
+}
+//绑定信息更新
+message S2c_Sync_binding_xixi{
+    optional bool binding_xixi = 1; //true为已经绑定过 
+}
+//推送更新消息
+message S2c_Entity_result{
+    optional Entity entity = 1; //返回记录
+}
+
+// 活动广播
+message S2c_FightNotice{
+    optional string nickname = 1;
+    optional int32 bType = 2;
+    optional int32 sType = 3;
+    optional string game_des = 4;
+    optional int32 multiple = 5;
+    optional string cardsType = 6;
+}
+//领取任务奖励
+message S2c_Receive_dailytask_reward{
+    optional int32 result = 1; //0:领取成功 1:已经领取过 2:未达到领取条件
+    optional int32 id = 2; // 任务ID
+    optional int32 dice_num = 3; //骰子数量
+}
+//银行升级
+message S2c_Bank_update{
+    optional int32 level = 1;
+    repeated int32 leveltime = 2;
+}
+//银行到期/即将到期
+message S2c_Bank_time_down{
+    optional int32 level = 1;
+    repeated int32 leveltime = 2;
+    optional int32 is_down = 3; //1为到期
+    optional int32 bankgold = 4;
+}
+
+message S2c_Activity_state_update{
+    optional Activity activity = 1;
+    optional int32 op = 2; //0.修改 1.移除 2.新增
+}
+//实名认证 认证中,查询结果后主动推送
+message S2c_Rnauth_result{
+    optional bool auth_succ = 1; // true 认证成功
+    optional int32 curr_age = 2;
+}
+
+message C2s_GM_gold{
+    required int32 goldnum = 1;//增加货币数额
+    required int32 type = 2;//货币种类 1金币，2钻石
+}
+
+message C2s_Rsp_GM_gold{
+    required bool result = 1; //0成功，1失败
+    optional int32 num = 2; //更新货币结果
+}
+
+message C2s_GM_pay{
+    required int32 mall_id = 1;//商品id    
+}
+
+message C2s_Rsp_GM_pay{
+    required bool result = 1; //0成功，1失败
+    optional int32 diamond = 2; //充值后diamond
+    optional int32 all_diamond = 3; //充值后all_diamond
+}
+
+// === VIP 接口 start ===
+
+message VIP_POINT_DAILY{
+    repeated int32 daily_task = 1; // 每日任务奖励  [0,30]
+    repeated int32 online_times = 2; // 在线奖励 [0,15]
+    repeated int32 xixi_gift = 3; // 每日前3次嘻嘻大奖 [0,15]
+    repeated int32 watch_any_ads =4 ; // 任意视频奖励 [0,30]
+}
+
+message C2s_Vip_data{
+}
+
+message C2s_Rsp_Vip_data{
+    optional int32 viplv = 1;
+    optional int32 recharge_diamondc = 2; // 累计充值钻石数
+    repeated Goods goods = 3; //奖励内容
+    optional bool bReward =4 ; //每日特权礼包 可领取？
+    optional VIP_POINT_DAILY vp_daily = 5;//每日富豪点数据
+}
+
+message C2s_Receive_vip_reward{    
+}
+
+message C2s_Rsp_Receive_vip_reward{
+    optional int32 result = 1;    // 0：领取成功  1:不能重复领取 2:还没有领取资格
+}
+
+//通知S2C vip 等级升级
+message S2c_Vip_up{
+    optional int32 viplv = 1;
+    optional bool bReward = 2; // VIP每日奖励
+    optional int32 recharge_diamondc = 3; // 累计充值钻石数 
+}
+
+
+// 领取当前vip等级福利 --废弃
+message C2s_Receive_vip_fl{
+    optional int32 lv = 1;
+}
+
+// 领取当前vip等级福利 --废弃
+message C2s_Rsp_Receive_vip_fl{
+    optional bool result = 1;
+    optional int32 e_info = 2;
+}
+
+
+// === VIP 接口 end ===
+
+
+// === 2v2 匹配接口 start===
+message Team2v2Info{
+    optional string teamid = 1;
+    repeated string team_member = 2;
+    repeated bool player_ready = 3;   
+    optional int32 gameid = 4;
+    optional int32 placeid = 5;
+    optional int32 needGlv = 6;
+    optional int32 password = 7;
+    optional int32 team_status =8; //team状态 0准备中，1匹配中，2游戏中    
+    repeated Db_info team_players =9; //玩家详情
+}
+
+message C2s_Create_team2v2{
+    optional int32 gameid = 1;
+    optional int32 placeid = 2;
+    optional int32 needGlv = 3;
+    optional int32 password = 4;
+}
+
+message C2s_Rsp_Create_team2v2{
+    optional int32 result = 1;  // 1 服务器即将关闭 ,10 已在房间中，8钻石不足,2金币不足
+    optional Team2v2Info teaminfo = 2;
+}
+
+message C2s_Join_team2v2{
+    optional string teamid = 1;
+    optional int32 password = 2;
+}
+
+message C2s_Rsp_Join_team2v2{
+    optional int32 result = 1;  // 1 服务器即将关闭 ,2队伍数据异常,10 已在房间中，8钻石不足,2金币不足      
+    optional Team2v2Info teaminfo = 2; 
+}
+
+message C2s_Leave_team2v2{
+}
+
+message C2s_Rsp_Leave_team2v2{
+    optional int32 result = 1; // 2队伍数据异常，3队伍匹配中
+}
+
+message S2c_Update_team2v2{
+    optional string teamid =1;
+    optional Team2v2Info teaminfo = 2;
+    optional int32 team_msg =3; //队伍状态更新原因  1 队员退出，2队伍配置更新,3队伍解散,4重建队伍,5成员加入
+}
+
+//修改team参数
+message C2s_Set_team_conf{
+    optional int32 placeid = 1; 
+}
+
+message C2s_Rep_Set_team_conf{
+    optional int32 result = 1; // 2队伍数据异常，3队伍(匹配中/游戏中)
+}
+
+//2v2匹配
+message C2s_Matching2v2{
+    optional string teamid = 1;
+}
+
+message C2s_Rsp_Matching2v2{
+    optional int32 e_info =1;
+}
+
+// 匹配报错
+message S2c_Matching2v2_err{
+    optional int32 e_info = 1;
+}
+
+//2v2匹配
+message C2s_Cancel_Matching2v2{
+}
+
+message C2s_Rsp_Cancel_Matching2v2{
+}
+
+//发起下一局 投票
+message C2s_Match_next{
+    optional bool ready = 1;//投票状态
+}
+
+message C2s_Rsp_Match_next{
+    optional int32 result = 1; // 2队伍数据异常，3队伍(匹配中/游戏中)
+}
+
+//--投票结果通知
+message S2c_Match_next_sync{
+    repeated string ready_pid = 1;
+    optional int32 time = 2; //结束时间戳 +15
+    optional int32 status = 3; // 投票结果  1 等待 , 2 通过,3 否决
+}
+
+// === 2v2 匹配接口 end ===
+
+// === 麻神祝福/庇佑 
+message C2s_Get_MjGod{
+    optional int32 god_type = 1; // 1 祝福, 2 庇佑    
+}
+
+message C2s_Rsp_Get_MjGod{
+    optional int32 gold_num = 1; // 金额    
+    optional int32 god_type = 2; // 1 祝福, 2 庇佑    
+    optional int32 status = 3; // 可用性 1 可用 ,2 已使用, 3 无效
+}
+
+//新手引导
+message C2s_Fin_Guide{       
+    optional int32 guide_id = 1; //引导id
+    optional int32 guide_value = 2; //引导更新值
+}
+
+message C2s_Rsp_Fin_Guide{   
+    repeated int32 guide_info = 1;//引导数组
+    optional int32 e_info = 2; //error信息 0正常，1数值异常,2 未定义
+}
+
+
+//SDK分享相关
+message GOD_AWARD_DATA{
+  optional int32 id = 1; // id 
+  optional int32 award = 2; //可用状态 0未用 1已用 [2]分享数据不用此字段
+  optional Goods goods = 3; //奖励列表
+  optional int32 today_share_count = 4; //今日分享次数 通 接口 C2s_Share_today_ok 244
+}
+
+//天降福利
+message C2s_Get_sdk_gift{  
+}
+
+message C2s_Rsp_Get_sdk_gift{
+  repeated GOD_AWARD_DATA god_award = 1;
+}
+
+message C2s_Award_sdk_gift{  
+  optional int32 id = 1; // id
+}
+
+message C2s_Rsp_Award_sdk_gift{
+  optional GOD_AWARD_DATA god_award = 1;
+  optional int32 e_info = 2; // 0正常 1异常
+}
+

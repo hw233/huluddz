@@ -1,0 +1,30 @@
+package gameProtos;
+
+  //获取信息
+message C2s_Rsp_Month_data{
+    optional Month_card_data data = 1; //月卡数据
+}
+  //获取信息
+message C2s_Month_data{
+}
+  //领取奖励
+message C2s_Rsp_Get_award{
+    optional int32 result = 1; //0 领取成功 1:当天已领取 2 月卡已过期 
+    optional int32 get_time = 2; //上次领取时间
+}
+  //领取奖励
+message C2s_Get_award{
+}
+  //月份升级
+message C2s_Month_card_upgrade{
+    optional int32 type = 1; //月卡升级到的类型
+}
+  //月份升级
+message C2s_Rsp_Month_card_upgrade{
+    optional int32 result = 1; //0 升级成功成功 1:未拥有月卡 2:月卡已过期 3:传的等级小于等于当前月卡等级 4:钻石不足 
+    optional Month_card_data data = 2; //月卡数据
+}
+  //月份升级
+message S2c_Month_card_update{
+    optional Month_card_data data = 1; //月卡数据
+}

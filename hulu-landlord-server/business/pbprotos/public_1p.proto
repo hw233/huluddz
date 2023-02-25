@@ -1,0 +1,382 @@
+package gameProtos;
+
+
+message Package{
+    optional int32 type = 1; //消息类型ID
+    optional int32 session = 2; //rpc会话ID,无需对方回复时可以发0,否则,保证唯一
+    optional bool req = 3; //true--请求,false--回复
+}
+
+message Goods{
+    optional int32 id = 1; // 物品ID
+    optional int64 num = 2; // 数量
+    optional int32 usetime = 3; //开始使用时间(-1代表还未开始使用)
+    optional int32 gettime = 4; //物品获取时间
+    optional int32 endtime = 5; //物品有效时间 有效时间不存在或者小于等于获取时间为永久有效
+    optional bool hide = 6; //是否隐藏 true为隐藏
+}
+
+message GameTypec{
+    optional int32 winc = 1; //总胜利局数
+    optional int32 total = 2; //总局数
+    optional int32 maxCtype = 3; //最大类型
+    optional int32 maxNum = 4; //最大番数
+    optional Card_pack cards = 5; //牌
+}
+
+message Playinfo{
+    optional int32 winc = 1; //总胜利局数
+    optional int32 total = 2; //总局数
+    repeated GameTypec gameTypec = 3; //各模式信息
+}
+
+message PlayerDress{
+    optional int32 id = 1; //穿戴ID
+    optional bool hide = 2; //true为隐藏
+}
+
+message NewPTask{
+    repeated int32 task = 1;
+    optional int32 award = 2; //新手礼包
+}
+
+message Db_info{
+    optional string id = 1;
+    optional string nickname = 2;
+    optional string headimgurl = 3;
+    optional int32 diamond = 4;
+    optional int64 gold = 5;
+    optional int32 sex = 6;
+    optional string last_ip = 7;
+    optional bool isAgent = 8;
+    optional string phone = 9;
+    optional string district = 10; // 地区
+    optional int32 lv = 11; // 等级
+    repeated Goods backpack = 12; // 背包
+    optional int32 recharge_diamondc = 13; // 累计充值钻石数
+    optional int32 vip = 14; // VIP 等级
+    optional int32 win_gamec = 15; // 胜局数
+    optional int32 play_gamec = 16; // 总局数数
+    optional bool invalid_headimg = 17; // 非法头像
+    optional int32 headframe = 18; // 头像框ID
+    optional int32 login_time = 19; // 登录次数
+    optional int32 skin = 20; // 皮肤ID, 默认为nil
+    optional string idcard = 21; // 身份证号
+    optional int32 en_emotion = 22; // 入场表情ID
+    optional int32 curGuide = 23; // 当前引导大类型
+    optional int32 curState = 24; // 当前引导状态 0：未开始，1进行中，2已完成
+    repeated int32 completeGuides = 25; // 已完成引导ID列表
+    repeated int32 unlocks = 26; // 解锁功能表（解锁功能ID存放）
+    optional int32 curr_age = 27; // 年齡
+    optional int32 online_time = 28; // 已在線時間
+    optional int32 last_time = 29; // 最後登錄時間
+    optional bool refuse_friend = 30; // 是否拒绝添加好友
+    optional Playinfo playinfo = 31; // 各个场次局数
+    repeated PlayerDress human_drees = 32; // 玩家时装
+    optional bool half_photo = 33; // 半身像是否开启
+    optional bool binding_xixi = 34; // 是否绑定公众号
+    optional int32 reg_time = 35; // 注册时间
+    optional int32 seg_prestige = 36; // 段位声望
+    optional int32 petCoin = 37; //宠物币
+    optional int32 cn_num = 38; //改名次数（可能为空）
+    optional NewPTask newPTask = 39; //新手引导
+    optional int32 rn_status = 40; //实名状态 0 认证成功 1 认证中 2 认证失败 nil 未进行过实名认证
+    optional int32 rn_auth_count = 41; //认证次数 一个账号只能认证3次
+    optional int32 month_fee = 42; //月充值
+    optional string realname = 43; //玩家实名
+    optional int32 viplv = 44; //viplv
+    optional int32 vip_reward = 45; //vip奖励领取数组
+    optional int32 vip_recharge = 46; //vip充值点数
+    optional int32 QQ_Wallet = 47; //QQ钱包余额 单位分
+    repeated int32 guide_info = 48; //引导数组 {0,0,0,0,0}
+}
+
+message My_training{
+    optional int32 Ball = 1; //截止时间
+    optional int32 Ball_award = 2; //奖励等级
+    optional int32 game_num = 3; //游戏局数
+    optional int32 score = 4; //最高分
+    optional int32 cg_num = 5; //免费挑战次数
+    optional int32 buy_num = 6; //已经挑战次数
+    optional int32 level_past = 7; //已通过的关卡，同时也肯定领取了奖励
+}
+
+message RankInfo{
+    optional int32 id = 1;
+    optional string nickname = 2;
+    optional string headimgurl = 3;
+    optional int32 sex = 4;
+    optional int32 headframe = 5;
+    optional int32 win_gamec = 6;
+    optional int32 eat_chickenc = 7;
+    optional int32 title_lv = 8;
+    optional int32 title_star = 9;
+    optional int32 score = 10;
+}
+
+message Mall_Data{
+    optional int32 id = 1; // mall_id
+    optional int32 buyc = 2; // 总的购买次数
+    optional int32 last_buy_time = 3; // 最后一次的购买时间 
+    optional int32 today_buyc = 4; // 今天购买次数
+}
+//货币道具
+message Coin_and_prop{
+    optional int32 gold = 2;
+    optional int32 diamond = 3;
+}
+
+message Select_Box{
+    optional bool is_choose = 1;
+    optional string text = 2;
+    optional string real_name = 3;
+    optional int32 value = 4;
+}
+
+message Option{
+    optional string name = 1;
+    repeated Select_Box box = 2;
+    optional string real_name = 3;
+    optional bool singular = 4; // radio box
+    optional int32 op_type = 5; //选项类型:1--单选框，2--多选框，3--输入框
+    optional int32 min = 6; //输入框 最小值
+    optional int32 max = 7; //输入框 最大值
+    optional int32 value = 8;
+}
+
+message Pattern{
+    optional string name = 1;
+    optional string real_name = 2;
+    repeated Option option = 3;
+    optional int32 player_num = 4;
+    optional int32 team_num = 5;
+
+}
+
+message My_medal{
+    optional int32 curr_lv = 1; //当前等级
+    repeated int32 free_award = 2; //免费奖励列表
+    repeated int32 pay_award = 3; //付费奖励列表
+    optional bool buy_pay = 4; //是否购买进阶勋章
+}
+
+message Player_Record{
+    optional string id = 1;
+    optional string nick = 2;
+    optional int32 score = 3;
+    optional string headimgurl = 4;
+}
+
+message Mail{
+    optional string id = 1; // ID
+    optional int32 create_time = 2; // 创建时间戳
+    optional string title = 3; // 标题
+    optional string content = 4; // 内容
+    repeated Goods attachment = 5; // 附件
+    optional bool have_read = 6; // 已阅读
+    optional bool received = 7; // 已领取
+    optional int32 mail_type = 8; // 邮件类型(系统，客服，好友赠送等)1:好友邮件，2:客服邮件，3:其它邮件
+    optional int32 mail_stype = 9; // 邮件子类型 1:好友送豆子,2:装扮,3:文字邮件,4:奖励邮件
+    optional string friend_name = 10; // 好友名称
+    optional string friend_head = 11; // 好友头像
+}
+//实物奖励
+message Entity{
+    optional string id = 1; // ID
+    optional int32 create_time = 2; // 创建时间戳
+    optional string name = 3; // 实物名称
+    optional int32 phoneNum = 4; // 电话号码
+    optional int32 received = 5; // 0为兑换中，1为未成功，2为成功
+    optional string nickname = 6; // 玩家名字
+    optional string receiver = 7; // 玩家ID
+    optional int32 exchangeLv = 8; // 兑换ID
+}
+
+message Task{
+    optional int32 id = 1;
+    optional int32 state = 2; // 0: 未完成  1: 已完成  2 : 已领取
+    optional int32 num = 3; // 当前完成次数(进度)
+}
+
+message WNP_Data{
+    optional int32 state = 1; // 0: 未完成 1: 已完成 2 : 已领取
+}
+
+message Title_tbl{
+    optional string p_id = 1; //玩家ID
+    optional int32 lv = 2; //当前等级
+    optional int32 score = 3; //当前分数
+    optional int32 curr_star = 4; //当前星数
+    optional int32 award_lv = 5; //奖励领取等级
+}
+
+message Ad_Window{
+    optional int32 receive_time = 1; // 最后一次领取时间
+    optional bool can_receive = 2; // 是否可以领取
+}
+
+message People_insure{
+    optional int32 lv = 1; //当前等级
+    optional int32 exp = 2; //经验
+    repeated int32 insures = 3; //保单信息
+}
+//麻将基础数据
+message Player_Gang{
+    repeated int32 cards = 1;
+    optional string provider = 2;
+    optional int32 type = 3; // 'm_gang' 'a_gang' 'b_gang' 'r_gang'
+    optional int32 push_time = 4;
+    optional int32 flag = 5;
+}
+
+message Player_Pong{
+    repeated int32 cards = 1;
+    optional string provider = 2;
+    optional int32 push_time = 3;
+}
+
+message Player_Eat{
+    repeated int32 cards = 1;
+    optional string provider = 2;
+}
+
+message Pong{
+    optional int32 card1 = 1;
+    optional int32 card2 = 2;
+}
+
+message Eat{
+    optional int32 card1 = 1;
+    optional int32 card2 = 2;
+}
+
+message Gang{
+    optional int32 type = 1; // m_gang / a_gang / b_gang
+    optional int32 card = 2;
+    optional int32 flag = 3;
+}
+
+message ActionCard{
+    optional int32 card = 1;
+    optional Eat eat = 2;
+    optional Pong peng = 3;
+    optional Gang gang = 4;
+}
+
+message Pet_data{
+    optional int32 id = 1; //宠物唯一id
+    optional int32 pet_id = 2; //宠物id(对应猫，狗等)
+    optional string name = 3; //宠物名称
+    optional int32 hunger_value = 4; //当前饥饿值
+    optional int32 happy_value = 5; //当前开心值
+    optional int32 star = 6; //当前星级
+    optional int32 level = 7; //当前阶级
+    repeated int32 skills = 8; //拥有的技能列表 -1代表未拥有技能
+    optional int32 confort = 9; //舒适值
+    optional int32 hunger_eat_value = 10; //当前食量
+    optional int32 hunger_ref_time = 11; //当前时段吃粮食减少的饥饿值
+    optional int32 hunger_eat_ftime = 12;
+    optional int32 star_floor = 13; //升星拖底值
+    optional int32 level_floor = 14; //升阶拖底值
+    optional int32 rename_count = 15; //改名次数
+    optional int32 happy_ref_time = 16; //开心值参考时间
+    repeated int32 pet_drees = 17; //时装
+}
+
+message Lottery_record{
+    optional string nickname = 1; // 名称
+    optional int32 goods_id = 2; // 物品ID
+    optional int32 num = 3; // 数量
+    optional int32 create_time = 4; //时间
+}
+
+message Lottery_own_record{
+    optional int32 t = 1; //抽奖时间
+    optional int32 id = 2; //物品ID
+    optional int32 num = 3; // 数量
+}
+
+message Month_card_data{
+    optional int32 total_day = 1; //连续奖励领取状态
+    optional int32 type = 2; //月卡类型
+    optional int32 begin_time = 3; //月卡开始时间
+    optional int32 get_time = 4; //上次领取时间
+}
+
+message Growth_plan_data{
+    optional bool active = 1; //是否激活
+    optional int32 win_count = 2; //胜局次数
+    optional int32 award_status = 3; //领取状态
+}
+
+message Endan_data{
+    optional int32 id = 1; //占领者id
+    optional int32 t = 2; //占领时间
+    optional string nickname = 3; //占领者名称
+    repeated int32 dress_data = 4; //占领者穿戴数据
+    optional int32 fan_xs = 5; //应援团系数
+    optional int32 fashion = 6; //占领者时尚值
+}
+
+message Fri_visit_data{
+    optional int32 t = 1; // 访问时间
+    optional int32 id = 2; //访问者id
+    optional int32 fri_id = 3; //被访问者id
+    optional string nickname = 4; //访问者名称
+    optional int32 pet_id = 5; //访问的宠物id(存在是逗宠物)
+    optional int32 happy_value = 6; //添加多少开心值(逗宠物是才有)
+}
+
+message Catwalk_data{
+    optional int32 t = 1; //报名时间
+    optional int32 id = 2; //用户id
+    optional string nickname = 3; //用户昵称
+    repeated int32 dress_data = 4; //用户穿戴数据
+    optional int32 sex = 5; //用户性别
+    optional int32 pet_id = 6; //宠物id
+    repeated int32 pet_dress = 7; //宠物穿戴
+    optional int32 charm = 8; //魅力值
+    optional int32 unify = 9; //合理值
+    optional int32 fashion = 10; //时尚值
+    optional int32 watch = 11; //眼缘值
+    optional int32 pet_fashion = 12; //宠物时尚值
+    optional int32 rank_index = 13; //排位
+}
+
+message Sel_gift{
+    repeated Goods fixed_awards = 1; //固定物品
+    repeated Goods sel_awards = 2; //可选物品
+}
+
+message RankListInfo{
+    optional int32 rank = 1; //名次
+    optional string nickname = 2;
+    optional string headimgurl = 3;
+    optional int32 value = 4; //对应各个排行榜的数据(宠物为 阶级*100+星级 段位根据声望计算)
+    optional string id = 5; //玩家ID
+}
+
+message Card_pack{
+    repeated int32 hand = 1;
+    repeated Player_Pong pengs = 2;
+    repeated Player_Gang gangs = 3;
+    optional int32 huCard = 4;
+}
+
+message BrokePid{
+    optional string id = 1;
+}
+
+message IO_info{
+    optional string p_id = 1; //玩家ID
+    optional int32 ioType = 2; //类型
+    optional int32 time = 3; //时间，用来排序
+    optional int32 multiple = 4; //番数
+    optional int32 gold = 5; //输赢数量（正负）
+    repeated BrokePid providers = 6; //玩家ID
+    repeated int32 cTypes = 7; //胡  番型.只有胡牌/查大叫  时存在
+    optional int32 huCount = 8; //一炮多响时存在 被胡次数
+    optional int32 daiGenCount = 9; //胡牌 有根时 的根数
+    optional int32 rankScore = 10; //rank分增减
+    optional int32 petCoin = 11; //宠物币
+}

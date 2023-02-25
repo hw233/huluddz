@@ -1,0 +1,4 @@
+
+include "config.publish"
+env = "check"
+include "config.path"

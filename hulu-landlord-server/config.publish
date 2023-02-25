@@ -1,0 +1,16 @@
+env = "publish"
+include "config.path"
+
+thread = 32
+harbor = 0
+start = "main"	-- main script
+bootstrap = "snlua bootstrap"	-- The service for bootstrap
+enablessl = true
+enablecipher = true
+--cluster = root .. "clustername.lua"
+
+gameid 	= "qxd_hlddz"
+loglevel = 0
+--daemon = "./skynet.pid"
+logger = "GameSvr"
+

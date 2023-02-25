@@ -1,0 +1,30 @@
+package gameProtos;
+
+  //获取成长计划数据
+message C2s_Rsp_Get_growth_plan_data{
+    optional Growth_plan_data data = 1; //成长计划数据
+}
+  //获取成长计划数据
+message C2s_Get_growth_plan_data{
+}
+  //激活成长计划
+message C2s_Rsp_Growth_plan_active{
+    optional int32 result = 1; //0 激活成功 1 需要vip2 2 钻石不足
+    optional Growth_plan_data data = 2; //成长计划数据
+}
+  //激活成长计划
+message C2s_Growth_plan_active{
+}
+  //领取奖励
+message C2s_Get_growth_plan_award{
+    optional int32 index = 1; //领取第几项奖励
+}
+  //领取奖励
+message C2s_Rsp_Get_growth_plan_award{
+    optional int32 result = 1; //0 成功 1 未激活 3 未达到领取条件 2 奖励不存在 4奖励已领取
+    optional int32 index = 2; //领取第几项
+}
+  //成长计划信息同步
+message S2c_Sync_growth_plan_info{
+    optional Growth_plan_data data = 1; //月卡数据
+}

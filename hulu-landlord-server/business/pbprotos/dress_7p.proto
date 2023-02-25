@@ -1,0 +1,31 @@
+package gameProtos;
+
+      // 通用活动数据
+message C2s_Dress_goods{
+    optional int32 goods_id = 1; // 时装id
+}
+      // 通用活动数据
+message C2s_Rsp_Dress_goods{
+    optional int32 result = 1; //0 成功
+    optional int32 goods_id = 2; // 时装id
+}
+
+message C2s_Drop_goods{
+    optional int32 goods_id = 1; // 时装id
+}
+
+message C2s_Rsp_Drop_goods{
+    optional int32 result = 1; //0 成功
+    optional int32 goods_id = 2; // 时装id
+}
+
+message C2s_Hide_dress{
+    optional int32 goods_id = 1; // 时装id
+    optional bool hide = 2; // true隐藏
+}
+
+message C2s_Rsp_Hide_dress{
+    optional int32 result = 1; //0 成功
+    optional int32 goods_id = 2; // 时装id
+    optional bool hide = 3; //时装是否隐藏
+}

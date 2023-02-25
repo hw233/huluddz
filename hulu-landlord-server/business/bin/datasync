@@ -1,0 +1,12 @@
+#! /bin/bash
+main(){
+ #cd ~/svntest/abbey
+ #cd ~/tool
+ #git pull origin master
+#svn update
+ cd ./data
+ rm -rf *
+ cd ..
+ cp -r ~/servers/tool/tool/resource/abifish/server/* ./data
+}
+main "$@"

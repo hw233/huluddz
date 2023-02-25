@@ -1,0 +1,89 @@
+package gameProtos;
+
+  //每日消耗钻石数据
+message C2s_Rsp_Diamond_ccomsume_data{
+    optional int32 num = 1; //钻石消耗数量
+    optional int32 status = 2; //领取状态(取位确定)
+}
+  //每日消耗钻石数据
+message C2s_Diamond_ccomsume_data{
+}
+  //连续充值数据
+message C2s_Rsp_Recharge_ccomsume_data{
+    optional int32 num = 1; //连续充值天数
+    optional int32 status = 2; //领取状态(取位确定)
+}
+  //连续充值数据
+message C2s_Recharge_ccomsume_data{
+}
+  //领取每日钻石奖励
+message C2s_Diamond_ccomsume_award{
+    optional int32 index = 1; //领取第几项奖励
+}
+  //领取每日钻石奖励
+message C2s_Rsp_Diamond_ccomsume_award{
+    optional int32 result = 1; //0 成功 1 领取项不存在 2 已经领取 3 未达到领取条件
+    optional int32 index = 2; //领取了第几项
+}
+  //领取每日充值
+message C2s_Recharge_ccomsume_award{
+    optional int32 index = 1; //领取第几项奖励
+}
+  //领取每日充值
+message C2s_Rsp_Recharge_ccomsume_award{
+    optional int32 result = 1; //0 成功 1 领取项不存在 2未达到领取条件 3已经领取过
+    optional int32 index = 2; //领取了第几项
+}
+  //获取累积充值奖励数据
+message C2s_Rsp_Tdiamond_award_data{
+    optional int32 tdiamond = 1; //总充值
+    optional int32 status = 2; //领取状态(取位确定)
+}
+  //获取累积充值奖励数据
+message C2s_Tdiamond_award_data{
+}
+  //领取总充值奖励
+message C2s_Tdiamond_award{
+    optional int32 index = 1; //领取第几项奖励
+}
+  //领取总充值奖励
+message C2s_Rsp_Tdiamond_award{
+    optional int32 result = 1; //0 成功 1 领取项不攒 2 已经领取过 3 未达到领取条件
+    optional int32 index = 2; //领取了第几项
+}
+  //获取对局宝箱数据
+message C2s_Rsp_Match_box_data{
+    optional int32 num = 1; //总对局次数
+    optional int32 status = 2; //领取状态(取位确定)
+}
+  //获取对局宝箱数据
+message C2s_Match_box_data{
+}
+  //领取总充值奖励
+message C2s_Match_box_award{
+    optional int32 index = 1; //领取第几项奖励
+}
+  //领取总充值奖励
+message C2s_Rsp_Match_box_award{
+    optional int32 result = 1; //0 成功 1 领取项不攒 2 已经领取过 3 未达到领取条件
+    optional int32 index = 2; //领取了第几项
+}
+
+message S2c_Sync_recharge_ccomsume_data{
+    optional int32 num = 1; //连续充值天数
+    optional int32 status = 2; //领取状态
+}
+
+message S2c_Sync_diamond_ccomsume_data{
+    optional int32 num = 1; //钻石消耗数量
+    optional int32 status = 2; //领取状态
+}
+
+message S2c_Sync_all_fee{
+    optional int32 all_diamond = 1; //累积充值金额
+}
+
+message S2c_Sync_match_box{
+    optional int32 num = 1; //对局完成次数
+    optional int32 status = 2; //领取状态
+}

@@ -1,0 +1,4 @@
+
+include "config.local"
+env = "local_shanghai"
+include "config.path"

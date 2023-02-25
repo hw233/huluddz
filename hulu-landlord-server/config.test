@@ -1,0 +1,4 @@
+
+include "config.local"
+env = "test"
+include "config.path"

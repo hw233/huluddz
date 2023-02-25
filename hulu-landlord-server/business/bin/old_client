@@ -1,0 +1,2 @@
+#! /bin/bash
+./xycard_server/3rd/lua/lua old_client.lua $1

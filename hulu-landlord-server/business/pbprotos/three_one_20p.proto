@@ -1,0 +1,87 @@
+package gameProtos;
+
+  //获取三缺一信息
+message C2s_Rsp_Get_three_one_info{
+    optional int32 t = 1; //参考时间
+    optional int32 clearance = 2; //通关到第几关
+    repeated int32 skills = 3; //拥有的技能
+    optional int32 buy_count = 4; //当天已经购买的次数
+    optional int32 count = 5; //重置次数
+    optional int32 skillLv = 6; //技能等级
+    optional int32 awardlv = 7; //奖励等级
+    optional bool winToday = 8; //今日是否通关
+}
+  //获取三缺一信息
+message C2s_Get_three_one_info{
+}
+  //开始挑战
+message C2s_Three_one_challenge{
+    optional int32 index = 1; //挑战的关卡
+    optional string address = 2; //玩家地址
+}
+  //开始挑战
+message C2s_Rsp_Three_one_challenge{
+    optional int32 result = 1; //0成功 1当前场次不能挑战 2挑战关卡不存在
+}
+  //购买重置次数
+message C2s_Rsp_Three_one_buy_count{
+    optional int32 result = 1; //0成功 1月卡才能购买 2通过第一关才能购买 3钻石不够 4购买次数不够
+    optional int32 buy_count = 2; //已经购买的次数
+    optional int32 clearance = 3; //当前通过第几关
+    repeated int32 skills = 4; //拥有的技能
+    optional int32 count = 5; //重置次数
+}
+  //购买重置次数
+message C2s_Three_one_buy_count{
+}
+  //请求技能选择
+message C2s_Rsp_Get_rand_skill{
+    optional bool result = 1; //结果
+    optional int32 error_id = 2; //报错ID
+    repeated int32 rtSkills = 3; //可选技能
+}
+  //请求技能选择
+message C2s_Get_rand_skill{
+}
+  //技能选择
+message C2s_Change_one_skill{
+    optional bool isChange = 1; //是否改变
+    optional int32 skIndex = 2; //三选一位置，1,2,3
+}
+  //技能选择
+message C2s_Rsp_Change_one_skill{
+    optional bool result = 1; //结果
+    optional int32 error_id = 2; //报错ID
+    repeated int32 skills = 3; //已有技能列表
+    optional int32 skillLv = 4; //技能等级
+}
+  //开始游戏
+message C2s_Three_one_game{
+
+}
+  //重置挑战
+message C2s_Rsp_Three_on_reset{
+    optional int32 result = 1; //结果
+    optional int32 count = 2; //重置次数
+    optional int32 clearance = 3; //通关到第几关
+    repeated int32 skills = 4; //已有技能列表
+    optional int32 buy_count = 5; //已经购买的次数
+    optional int32 skillLv = 6; //技能等级
+    optional int32 awardlv = 7; //奖励等级
+    optional bool winToday = 8; //今日是否通关
+}
+  //重置挑战
+message C2s_Three_on_reset{
+}
+  //领取奖励
+message C2s_Rsp_Give_three_one_award{
+    optional int32 awardlv = 1; //当前奖励等级
+}
+  //领取奖励
+message C2s_Give_three_one_award{
+}
+  //同步胜利场次
+message S2c_Sync_clearance{
+    optional int32 clearance = 1; //当前胜利场次
+    optional int32 winC = 2; //通关次数
+}

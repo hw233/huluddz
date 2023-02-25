@@ -1,0 +1,18 @@
+return {
+ [1]={trigger_amount=880000, return_ratio=10000, store_id=800027, },
+ [2]={trigger_amount=1080000, return_ratio=10000, store_id=800028, },
+ [3]={trigger_amount=2088000, return_ratio=10000, store_id=800029, },
+ [4]={trigger_amount=2688000, return_ratio=10000, store_id=800030, },
+ [5]={trigger_amount=3280000, return_ratio=10000, store_id=800031, },
+ [6]={trigger_amount=88000000, return_ratio=10000, store_id=800032, },
+ [7]={trigger_amount=528000000, return_ratio=10000, store_id=800033, },
+ [8]={trigger_amount=1080000000, return_ratio=10000, store_id=800034, },
+ [9]={trigger_amount=1280000000, return_ratio=10000, store_id=800035, },
+ [10]={trigger_amount=1580000000, return_ratio=10000, store_id=800036, },
+ [11]={trigger_amount=1880000000, return_ratio=10000, store_id=800037, },
+ [12]={trigger_amount=2080000000, return_ratio=10000, store_id=800038, },
+ [13]={trigger_amount=2280000000, return_ratio=10000, store_id=800039, },
+ [14]={trigger_amount=2580000000, return_ratio=10000, store_id=800040, },
+ [15]={trigger_amount=2880000000, return_ratio=10000, store_id=800041, },
+ [16]={trigger_amount=3080000000, return_ratio=10000, store_id=800042, },
+}

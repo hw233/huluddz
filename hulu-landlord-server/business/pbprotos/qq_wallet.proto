@@ -1,0 +1,88 @@
+package gameProtos;
+
+
+//红包提现记录
+message qq_hb_drawal_record{
+    optional float total_fee = 1; // 提现金额  
+    optional int32 create_time = 2; //下单时间
+    optional int32 state = 3;      //订单状态 1已领取，2 审核中,3审核通过未领取
+    optional int32 drawals_type = 4;    //提现类型
+    optional bool exchange_type = 5;    //true提现 ,false兑换
+}
+
+//提现界面信息  红包数据
+message Rpcash{
+    optional int32 times = 1; // 每日剩余可提现次数
+    optional int32 days = 2; // 连续登录天数
+    optional int32 play_gamec = 3; // 当日对局数
+    optional int32 rp_times = 4; // 累计领取对局红包次数
+    repeated int32 withdrawals_times=5;      //对应cfg配置已使用次数
+    repeated int32 exChange_times=6;      //对应cfg配置已使用次数
+    repeated qq_hb_drawal_record qq_hb_drawals = 7; //最近提现记录
+}
+
+message C2s_Wallet_data{   //获取提现界面信息
+}
+
+message C2s_Rsp_Wallet_data{  
+    optional Rpcash rpcash=1; 
+}
+
+message C2s_QQ_With_drawals{    //提现
+    optional int32 mall_id =1 ; // cfg配置id
+    optional int32 type = 2; // 接口类型 1:可以用于任何场景,充值返现，广告奖励 2:限制一天只能提现一次，适合签到统计类红包奖励
+    optional string act_name = 3; // 场景标识,活动名称 wallet ads_xxx_reward activity_xxx    
+    optional string wishing = 4; // 祝福语，16字以内    
+}
+
+message C2s_Rsp_QQ_With_drawals{
+    optional int32 result = 1; //0:提现成功 1:服务器维护，提现关闭 2:只能够用已经拥有的月卡 3:商品不存在 4:领取次数条件不足 5:下单失败,6余额不足
+    optional int32 wallet = 2;// 扣除的钱包余额 单位分
+    optional int32 total_fee = 3;//发放金额 单位分
+}
+
+message C2s_QQ_ExChange_gold{      //兑换
+    optional int32 mall_id = 1; // cfg配置id
+    optional string act_name = 2; // 场景标识,活动名称 wallet ads_xxx_reward activity_xxx       
+}
+
+message C2s_Rsp_QQ_ExChange_gold{
+    optional int32 result = 1; //0:提现成功 1:服务器维护，提现关闭 2:只能够用已经拥有的月卡 3:商品不存在 4:超过限购次数 5:下单失败
+    optional int32 wallet = 2;// 扣除的钱包余额 单位分
+    optional int32 gold = 3;// 发放的金币金额  
+}
+
+message C2s_QQ_ads_reward{
+    optional string subjoinDesc = 1; //细分场景标签 games ...
+    optional int32 mall_id = 2;//cfg所以id
+}
+
+message C2s_Rsp_QQ_ads_reward{
+    optional int32 result = 1; //0:成功 1:服务器维护，提现关闭 3:商品不存在 4:超过限购次数 5:下单失败
+    optional int32 wallet = 2;// 发放的份额 单位分 
+    optional int32 times = 3;//更新值 可用次数   
+    repeated int32 times_array = 4;//数组参数 更新值 可用次数
+}
+
+//测试广告领取次数方法
+message C2s_GM_QQ_ads_times{
+    optional string subjoinDesc = 1; //细分场景标签 games , day30 , everyday , cardsshow, online, day_cash
+    optional int32 times = 2;//增量值
+    repeated int32 times_array = 3;//数组参数 增量值
+}
+
+message C2s_Rsp_GM_QQ_ads_times{
+    optional string subjoinDesc = 1; //细分场景标签 games ...
+    optional int32 times = 2;//更新值 可用次数
+    repeated int32 times_array = 3;//数组参数 更新值 可用次数
+}
+
+//上报视频点击/完成
+message C2s_QQ_ads_watch_submit{
+    optional string subjoinDesc = 1; //细分场景标签 games ...
+    optional int32 type = 2;// 1 开始播放 ,2 播放完成
+}
+
+message C2s_Rsp_QQ_ads_watch_submit{
+    optional bool result = 1;
+}

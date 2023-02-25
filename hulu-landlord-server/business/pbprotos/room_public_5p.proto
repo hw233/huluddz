@@ -1,0 +1,162 @@
+package gameProtos;
+
+//玩家准备
+message C2s_Ready{
+
+}
+//玩家离开
+message C2s_Leave{
+}
+
+message C2s_Say{
+    optional string msg = 1;
+    optional int32 music_id = 2;
+}
+
+message C2s_Play_ani{
+    optional int32 ani_id = 1; //需要播放动画的ID
+    optional string target_id = 2; //目标玩家ID，如果动画需要扔向其他玩家
+}
+
+message C2s_Cancel_ready{
+
+}
+
+message C2s_Player_begin_game{
+
+}
+
+message Join_info{
+    optional Db_info dbinfo = 1;
+    optional int32 chair = 2;
+    optional string curr_state = 3;
+    optional string address = 4;
+    optional int32 score = 5;
+    optional int32 prestige = 6;
+    optional Pet_data pet_info = 7;
+}
+
+message Player_Hu{
+    optional int32 huCard = 1;
+    optional string provider = 2;
+    optional int32 push_time = 3;
+}
+// 玩家牌信息
+message Player_Card_Info{
+    repeated int32 hand = 1; // 手牌,其他玩家
+    repeated Player_Pong pong = 2; // 碰过的牌
+    repeated Player_Gang gang = 3; // 杠过的牌
+    repeated Player_Hu hu = 4; // 胡过的牌 血战到底肯定会做    
+    repeated int32 play_out = 5; // 打出的牌 被碰、杠、胡的牌剔除
+    optional int32 lack = 6; // 缺一信息
+    repeated int32 exchange_card = 7; // 已换牌信息
+    repeated int32 waitExCards = 8; // 等待换牌信息
+}
+
+message Player_Game_Info{
+    optional Db_info dbinfo = 1;
+    optional int32 chair = 2;
+    optional string curr_state = 3;
+    optional int32 score = 4;
+    optional string address = 5;
+    optional bool off_line = 6; //玩家离线标记
+    optional Player_Card_Info player_card_info = 7; //玩家牌局信息
+    optional int32 entrust = 8; //玩家托管
+    optional bool leave = 9; //玩家离开标记
+    optional bool giveup = 10; //玩家认输标记
+    optional int32 lastAddCard = 11; //玩家最后抓的牌
+    optional int32 prestige = 12; //声望
+    repeated IO_info IOChange = 13; //玩家io流水
+    optional int32 teamid = 14;
+}
+
+message Room_info{
+    optional string id = 1;
+    optional string voiceid = 2;
+    optional string owner = 3;
+    optional int32 gameType = 4;    
+    repeated int32 teaminfo_1 = 5; //{pid1,pid2}
+    repeated int32 teaminfo_2 = 6; //{pid1,pid2}
+    repeated int32 team_scores = 7; //{teamScore1,teamScore2}//当前2v2 team分数更新
+    repeated int32 team_player_scores = 8;//{0,0,0,0} team个人分数 按座位key
+}
+
+message S2c_Joinresult{
+    optional bool result = 1;
+    repeated Join_info player_info = 2;
+    optional Room_info room_info = 3;
+    optional int32 score = 4;
+    optional int32 e_info = 5;
+    optional int32 needGlv = 6; //加房间的金币档位
+}
+
+message S2c_Playerjoin{
+    optional Join_info playerinfo = 1;
+}
+
+message S2c_Player_ready{
+    optional string id = 1;
+}
+// 房间中掉线
+message S2c_Userafk{
+    optional string pid = 1;
+}
+// 返回房间
+message S2c_Userback{
+    optional string pid = 1;
+}
+
+message S2c_Player_leave{
+    optional string id = 1;
+    optional string pattern_name = 2;
+    optional int32 cause = 3; //踢出原因
+}
+
+message S2c_Dissolve_failure{
+}
+
+message S2c_Dissolve_room{
+    optional string pattern_name = 1;
+    optional bool errDiss = 2;
+}
+
+message S2c_Cannot_dissolve{
+    
+}
+
+message S2c_Player_say{
+    optional string pid = 1;
+    optional string msg = 2;
+    optional int32 music_id = 3;
+}
+
+message S2c_Player_play_ani{
+    optional int32 ani_id = 1;
+    optional string pid = 2; //发送动画的玩家
+    optional string target_id = 3; //目标 动画的玩家
+}
+
+message S2c_Joinroom{
+    optional bool result = 1;
+    optional int32 chair = 2;
+    repeated Join_info player_info = 3;
+    optional Room_info room_info = 4;
+}
+
+message S2c_Player_cancel_ready{
+    optional string id = 1;
+}
+
+message S2c_Begin_game_fail{
+    optional int32 error_id = 1;
+}
+
+message S2c_Player_select_lack{
+    optional string id = 1;
+    optional int32 lack = 2;
+}
+
+message S2c_All_join{
+    optional Room_info room_info = 1;
+    repeated Join_info pinfos = 2;
+}

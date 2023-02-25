@@ -1,0 +1,436 @@
+package gameProtos;
+
+//玩家出牌操作
+message C2s_Action{
+    optional int32 op = 1; // eat || pong || gang || hu || play 出牌
+    optional ActionCard actioncard = 2;
+}
+//加倍
+message C2s_Double{
+    optional bool result = 1; //结果
+    optional bool is_super = 2; //是否是超级加倍
+}
+//踢人
+message C2s_Kick_player{
+    optional string obj_id = 1; //目标玩家
+}
+//客户端麻将手牌出错时，请求手牌
+message C2s_Request_hand{
+
+}
+//托管信息
+message C2s_Request_entrust{
+    optional int32 isentrust = 1;
+}
+//定缺
+message C2s_Select_lack{
+    optional int32 lack = 1;
+}
+//换三张
+message C2s_Exchange_card{
+    repeated int32 cards = 1;
+}
+
+//2v2 预 换三张
+message C2s_Exchange_card_pre{
+    repeated int32 cards = 1;
+    optional bool sure = 2; //是否确定,弃用
+}
+
+//2v2 预 换三张反馈 单人通知
+message S2c_Exchange_card_pre_rsp{
+    optional bool sure = 1; //是否确定
+    optional string pid = 2; //玩家id
+    repeated int32 cards = 3; //自身选择的交换手牌
+    optional int32 count = 4; //交换张数
+    optional int32 err = 5; //错误信息
+}
+
+//获取流水信息
+message C2s_Get_self_io{
+
+}
+
+message C2s_Give_up{
+    
+}
+//房间匹配结果
+message S2c_Create_room_result{
+    optional int32 error = 1; //是否匹配成功
+    repeated Player_Game_Info players = 2; //房间里的玩家信息
+}
+
+message OpArgs{
+    optional int32 huType = 1; // 
+    optional int32 cardType = 2; // 0 没胡 1.平胡 2.爆头 3.飘财 4.双飘
+    optional int32 huState = 3; // 0 正常胡 1报听  2 杀报
+    optional int32 huCard = 4; // 抢杠胡，或放炮胡的麻将id
+    optional Pong peng = 5; // 碰  有且只有2个
+    repeated Eat eats = 6; // 吃
+    repeated Gang gangs = 7; // 杠 
+    repeated int32 tingCards = 8; // 发牌时,打出去牌，可报听的card id,
+}
+
+message Op{
+    optional int32 op = 1;
+    optional OpArgs args = 2;
+}
+
+message Player_Small_Bill_Hzmj{
+    optional string pid = 1;
+    optional int32 huType = 2;
+    optional int32 cardType = 3;
+    repeated int32 hand = 4;
+    repeated Player_Pong pong = 5;
+    repeated Player_Gang gang = 6;
+    optional int32 roundscore = 7;
+    optional int32 betnum = 8;
+    optional int32 win_gold = 9;
+}
+
+message Player_Push_Cards{
+    optional string id = 1;
+    repeated int32 hand = 2;   
+}
+
+//游戏开始
+message S2c_Game_start{
+    optional string banker = 1; //庄家
+    repeated int32 joker = 2; //万能牌
+    optional int32 dice_1 = 3; //骰子1
+    optional int32 dice_2 = 4; //骰子2
+    repeated int32 hand = 5; //玩家手牌
+    optional bool isBegin = 6; //是否开始游戏
+    optional int32 teamid = 7 ;//我的teamid
+}
+
+//队友发手牌13张
+message S2c_Game_start_2v2{
+    optional string pid = 1; //队友id
+    repeated int32 hand = 2; //玩家手牌    
+    optional int32 teamid = 3; //队伍id
+}
+
+//给玩家发牌
+message S2c_Deal_hzmj{
+    optional int32 card = 1; //牌
+    optional string accepter = 2; //接受者
+    optional bool fromtail = 3; //从牌头还是排尾取
+    repeated Op tip = 4; //可以做的操作
+    optional int32 time = 5;
+    optional int32 surplus_card = 6; //剩余牌数
+    repeated int32 HPGCards = 7; //是否会被碰杠胡
+    repeated TingInfo tempInfo = 8; //听牌数量
+    optional int32 skill_id = 9; //id
+}
+
+//操作提示(碰/杠...提示)
+message S2c_Tip{
+    repeated Op tip = 1;
+    optional int32 time = 2;
+}
+
+message HuData{
+    optional string pid = 1;
+    repeated int32 huType = 2; // 放炮胡,自摸 ...
+    repeated int32 cTypes = 3; //胡牌 牌型
+    optional int32 daiGenCount = 4; //带根数
+    optional int32 huCard = 5; //胡的牌
+    optional bool iscopy = 6; //是否克隆
+    optional int32 huNum = 7; //胡牌数量
+    optional int32 multiple = 8; //番数
+}
+
+message P_hand{
+    optional string pid = 1;
+    repeated int32 hand = 2; // 手牌
+}
+
+//输赢豆子的人的结构
+message WlPlayer{
+    optional string p_id = 1; //玩家ID
+    optional int32 gold_num = 2; //输赢数量（正负）
+    optional int32 addRankScore = 3; //分数增减（正负）
+    optional int32 multiple = 4; //番数变化
+    optional int32 petCoin = 5; //宠物币
+}
+
+//玩家胡牌
+message S2c_Players_hu{
+    repeated HuData huData = 1;
+    optional string provider = 2; //提供者id
+}
+// 扎鸟信息
+message Bird_card_info{
+    repeated int32 get_card = 1; //摸到的牌  值为1-112
+    repeated int32 hit_card = 2; //中的牌   值为1-112
+    optional string player_id = 3; //胡牌玩家id
+}
+
+message Player_Small_Bill{
+    optional string pid = 1;
+    optional int32 huType = 2;
+    optional int32 cardType = 3;
+    repeated int32 hand = 4;
+    repeated Player_Pong pong = 5;
+    repeated Player_Gang gang = 6;
+    optional int32 roundscore = 7;
+    optional int32 betnum = 8;
+    optional int32 win_gold = 9;
+    optional int32 fPigScore = 10; //花猪
+    optional int32 noTingScore = 11; //查大叫分数
+    optional int32 retScore = 12; //退税分数
+    optional int32 rankScore = 13; //rank分增减
+    optional Pet_data pet_info = 14;
+    optional bool threeWin = 15; //三缺一判断胜利
+    optional int32 prestige = 16; //声望
+    repeated PlayerDress human_drees = 17;
+    optional int32 score = 18; //总分
+    repeated IO_info IOChange = 19; //玩家io流水    
+    optional int32 team_fan = 20; //队伍总分
+    optional int32 team_balance = 21; //team结算总额
+    optional int32 gold_2v2 = 22; //自己的货币结算
+}
+
+message Player_Big_Bill{
+    optional string pid = 1;
+    optional int32 score = 2; // 总分
+    optional int32 zimo_times = 3; // 自摸次数
+    optional int32 jiepao_times = 4; // 接炮次数
+    optional int32 dianpao_times = 5; // 点炮次数
+    optional int32 kong_times = 7; // 杠次数
+    optional string headimgurl = 8; // 头像
+}
+
+//结算
+message S2c_Small_game_over{
+    repeated Player_Small_Bill bills = 1;
+    optional string videoname = 2; //战绩文件名
+    optional string club_type = 3;
+    optional int32 place_id = 4; //玩家场次等级 
+    optional int32 selectnum = 5; //海底捞最大抽的次数
+    optional int32 maxnum = 6; //最大牌数
+    optional Bird_card_info bird_card = 7;
+}
+
+//游戏总结算信息
+message S2c_Game_over_hzmj{
+    repeated Player_Big_Bill bills = 1;
+}
+//玩家回归牌局
+message S2c_You_back{
+    optional string room_state = 1; //房间状态 
+    optional Room_info room_info = 2; //房间信息
+    repeated Player_Game_Info player_info = 3; //玩家ID
+    optional int32 dice_1 = 4;
+    optional int32 dice_2 = 5;
+    repeated int32 joker = 6; //癞子牌列表
+    optional string banker = 7; //庄家id
+    optional string lastplayer = 8; //上一个玩家id
+    optional string currentplayer = 9; //当前玩家id
+    optional int32 currentround = 10;
+    repeated Op tip = 11;
+    optional int32 entrust = 12; //玩家托管标记
+    optional int64 time = 13; //当前状态结束时间
+    optional int32 lastOp = 14; //房间中最后一个操作(出牌,碰,杠等)
+    optional int32 wallLen = 15; //牌墻剩餘數量
+    optional bool changeHand = 16; //是否改变手牌
+    repeated IO_info IOChange = 17; //玩家io流水
+    optional int32 backCards = 18; //从后面取牌数
+    optional int32 skill_id = 19; //id
+    repeated int32 lookCards = 20; //查看的牌
+    optional int32 skillEndTime = 21; //技能特效结束时间
+    optional bool isBegin = 22; //游戏是否开始
+    optional int32 luckStar = 23; //幸运星
+    repeated int32 colorTbl = 24; //顺风耳
+    repeated int32 HPGCards = 25; //千里顺风耳
+    repeated TingInfo tempInfo = 26; //听牌数量
+    optional int32 prestige = 27; //当前声望    
+    optional int32 teamid = 28;// 自己teamid
+}
+//可以加倍通知
+message S2c_Can_jia_bei{
+    optional int32 time = 1; //截止时间
+}
+//玩家加倍
+message S2c_Jia_bei{
+    optional string player_id = 1; //发送时间
+    optional bool is_super = 2; //是否是超级加倍
+    optional bool is_jia_bei = 3; //是否加倍
+    optional int32 Jackpot_ratio = 4; //倍率
+}
+
+message One_player_gold{
+    optional string id = 1;
+    optional int32 gold = 2;
+}
+//各个玩家金币
+message S2c_Everyone_gold{
+    repeated One_player_gold all_player_gold = 1; //当前所有我我那家金币
+}
+//通知加倍完成
+message S2c_All_jia_bei_ok{
+ 
+}
+//超时系统结束游戏
+message S2c_Timeoutover{
+  
+}
+//玩家出牌
+message S2c_Player_action{
+    optional int32 op = 1;
+    optional string pid = 2;
+    optional ActionCard actioncard = 3; //麻将出牌
+    optional int32 lastcard = 4;
+    optional int32 time = 5;
+    optional bool isErr = 6;
+    optional int32 playPos = 7; //出牌位置  
+    optional int32 insertPos = 8; //插入位置
+    optional bool changeHand = 9; //手牌改变
+}
+//玩家托管信息
+message S2c_Entrust{
+    optional int32 isentrust = 1;
+    optional string pid = 2;
+}
+//可以加倍通知
+message S2c_Can_select_lack{
+    optional int32 time = 1; //截止时间
+}
+//可以换牌
+message S2c_Can_exchange_card{
+    optional int32 time = 1; //截止时间
+}
+//换牌成功
+message S2c_Exchange_suc{
+    repeated int32 hand = 1;
+    repeated int32 change_card = 2;
+    optional int32 exchange_type = 3; //1逆时针，2顺时针，3对家
+    optional string pid =4;//自己or队友id
+}
+//换三张反馈
+message S2c_Exchange_card_r{
+    optional bool result = 1; //交换选择结果
+    optional string pid = 2; //其他玩家 选择完成
+    repeated int32 cards = 3; //自身选择的交换手牌
+    optional int32 count = 4; //交换张数
+    optional int32 err = 5; //错误信息
+}
+//血流开始打牌
+message S2c_Playing_blood{
+    optional string play_p = 1;
+    repeated Op tip = 2;
+    optional int32 time = 3;
+    optional int32 operationTime = 4;
+    optional int32 surplus_card = 5; //剩余牌数
+}
+//血流给玩家发首牌
+message S2c_Deal_one{
+    optional int32 card = 1; //牌
+    optional string accepter = 2; //接受者
+    optional int32 time = 3;
+}
+
+message S2c_Playing_hzmj{
+
+}
+
+//金币增加扣除的结果
+message S2c_WlResult{
+    repeated WlPlayer currencys = 1;    
+    optional bool isHide = 2; //ture 表示不显示
+    repeated WlPlayer scores = 3; //玩家team 分数变动
+    repeated int32 team_score_lst =  4; //team分组分数更新
+}
+
+//玩家认输
+message S2c_Player_give_up{
+    optional string p_id = 1; //玩家ID
+}
+
+//玩家充值完成
+message S2c_Player_pay_end{
+    optional string p_id = 1; //玩家ID
+}
+
+message One_io{
+    optional string io_type = 1; //io类型
+    optional int32 room_time = 2; //时间，用来排序
+    optional int32 multiple = 3; //番数
+    optional int32 gold = 4; //输赢金币
+}
+//发送流水信息
+message S2c_Send_self_io{
+    repeated One_io my_io = 1; //玩家流水信息
+}
+
+//通知新的环节开始,如换三张/缺一门
+message S2c_State_start{
+    optional int32 time = 1; //发送时间
+    optional int32 operationTime = 2; //换三张/缺一门环节操作时间
+    optional string stype = 3;
+    repeated int32 cards = 4; //服务端换三张提示
+}
+
+//玩家选择弃牌类型
+message S2c_P_discard{
+    optional string pid = 1;
+    optional int32 lack = 2; //1 条 2 筒 3 万  
+    optional bool result = 3;
+}
+//需要充值的玩家
+message S2c_Need_recharge{
+    repeated string pids = 1;
+}
+
+message DiscardType{
+    optional string pid = 1;
+    optional int32 dType = 2; //1 条 2 筒 3 万
+}
+//玩家选择弃牌类型结束
+message S2c_Discard_over{
+    repeated DiscardType dTypes = 1;
+}
+
+message S2c_Play_card{
+    optional int32 time = 1;
+}
+
+message S2c_PIOChange{
+    repeated IO_info IOChange = 1;
+}
+//出牌
+message S2c_Play_out{
+    optional string pid = 1;
+    optional int32 time = 2;
+}
+//特效表现
+message S2c_Dis_effect{
+    repeated string pids = 1;
+    optional int32 eff_type = 2; //特效类型 
+}
+//推牌
+message S2c_Push_cards{
+    repeated Player_Push_Cards hands = 1; //玩家手牌信息
+    repeated int32 wall = 2;
+}
+
+
+//呼叫转移
+message S2c_Call_other{
+    optional string provider = 1; //提供者
+    repeated string pids = 2; //特效类型 
+}
+
+message OtherCards{
+    optional string pid = 1;
+    optional int32 handNum = 2;
+    repeated int32 playCards = 3;
+}
+//刷新手牌
+message S2c_Refresh_cards{
+    repeated int32 hand = 1;
+    repeated int32 playCards = 2;
+    optional int32 wallLen = 3;
+    repeated OtherCards otherCards = 4;
+}

@@ -1,0 +1,15 @@
+return {
+ [1001]={sex=1, avatar_icon="jstx_1", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx1", is_open=1, des="江道海头像", },
+ [1002]={sex=1, avatar_icon="jstx_5", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx5", is_open=1, des="易默思头像", },
+ [1003]={sex=1, avatar_icon="jstx_4", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx4", is_open=1, des="朱文轩头像", },
+ [1004]={sex=1, avatar_icon="jstx_1", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx1", is_open=0, },
+ [1005]={sex=1, avatar_icon="jstx_5", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx5", is_open=0, },
+ [1006]={sex=1, avatar_icon="jstx_4", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx4", is_open=0, },
+ [2001]={sex=2, avatar_icon="jstx_2", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx2", is_open=1, des="苏婉清头像", },
+ [2002]={sex=2, avatar_icon="jstx_6", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx6", is_open=1, des="鹿韵头像", },
+ [2003]={sex=2, avatar_icon="jstx_3", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx3", is_open=1, des="李可可头像", },
+ [2004]={sex=2, avatar_icon="jstx_2", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx2", is_open=0, },
+ [2005]={sex=2, avatar_icon="jstx_6", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx6", is_open=0, },
+ [2006]={sex=2, avatar_icon="jstx_3", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx3", is_open=0, },
+ [2008]={sex=2, avatar_icon="jstx_tx9", altas="RoleDevel/RoleIcon_Atlas.png", big_icon="grxx_tx9", is_open=1, des="汤宝儿头像", },
+}

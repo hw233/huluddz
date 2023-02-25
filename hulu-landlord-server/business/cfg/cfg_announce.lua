@@ -1,0 +1,17 @@
+return {
+ [1]={day=0, level=0, isopen=1, param=nil, content="恭喜{name}在幸运宝箱中获得了{itemname}", explain="玩家抽中s级道具时播放一条", },
+ [2]={day=0, level=0, isopen=1, param=nil, content="地主老爷{name}，购买了7日周卡", explain="玩家购买7日周卡的时候播放一条", },
+ [3]={day=0, level=0, isopen=1, param=nil, content="地主老爷{name}，购买了30日月卡", explain="玩家购买30日月卡的时候播放一条", },
+ [4]={day=0, level=0, isopen=1, param=nil, content="地主老爷{name}，购买了365日年卡", explain="玩家购买365日年卡的时候播放一条", },
+ [5]={day=0, level=0, isopen=1, param=nil, content="{name}在限时秒杀中获得了30元礼包", explain="限时秒杀购买了30元礼包的时候播放了一条", },
+ [6]={day=0, level=0, isopen=1, param=nil, content="恭喜地主老爷{name}的段位升到了斗皇", explain="玩家该赛季第一次达到斗皇段位的时候", },
+ [7]={day=0, level=0, isopen=1, param=nil, content="恭喜地主老爷{name}的段位升到了斗圣", explain="玩家该赛季第一次达到斗圣段位的时候", },
+ [8]={day=0, level=0, isopen=1, param=nil, content="恭喜地主老爷{name}的段位升到了斗帝", explain="玩家该赛季第一次达到斗帝段位的时候", },
+ [9]={day=0, level=0, isopen=1, param=nil, content="恭喜地主老爷{name}的段位升到了天下第一", explain="玩家该赛季第一次达到天下第一段位的时候", },
+ [10]={day=0, level=0, isopen=1, param=nil, content="恭贺地主老爷{name}夺得葫芦藤等级榜榜首", explain="玩家获得葫芦藤排名第一", },
+ [11]={day=0, level=0, isopen=1, param=nil, content="恭贺地主老爷{name}夺得段位等级榜榜首", explain="玩家获得段位排名第一", },
+ [12]={day=0, level=0, isopen=1, param=nil, content="地主老爷{name}在商城购买了{itemname}", explain="玩家在商城购买了角色", },
+ [13]={day=0, level=0, isopen=1, param=nil, content="地主老爷{name}领取了首充大礼包", explain="玩家获得首充", },
+ [14]={day=0, level=0, isopen=1, param=nil, content="地主老爷{name}一掷千金，解锁了‘金·葫芦礼盒’！等级奖励领不停~", explain="玩家解锁通行证付费奖励（购买了金卡）的时候播放一条", },
+ [15]={day=0, level=0, isopen=1, param=nil, content="地主老爷{name}豪气冲天，购买了‘铂金·葫芦礼盒’！获得了汤宝儿~", explain="玩家通行证购买超级金卡的时候播放一条", },
+}

@@ -1,0 +1,17 @@
+return {
+ [1001]={type=1, name="连炸炸翻天", detail="每天在斗地主不洗牌中累计打出连炸达到指定次数即可领取丰厚奖励！", unlock_key=0, fixed_activity=0, activity_sorting=1, tag=0, channel=0, prefab_name="activity_lianzhazhafantian", prefab_path="Prefabs/Active/UI", },
+ [1002]={type=1, name="胡牌1万倍", detail="每天在血流七宝牌中胡牌>=10000倍的次数达到指定次数即可领取丰厚奖励！", unlock_key=333, fixed_activity=0, activity_sorting=2, tag=0, channel=0, prefab_name="activity_hupai1wanbei", prefab_path="Prefabs/Active/UI", },
+ [2001]={type=2, name="登录奖励", detail="", unlock_key=0, fixed_activity=1, activity_sorting=2, tag=0, channel=0, prefab_name="activity_denglujiangli", prefab_path="Prefabs/Active/UI", },
+ [2002]={type=2, name="破产补助", detail="", unlock_key=0, fixed_activity=1, activity_sorting=3, tag=1, channel=0, prefab_name="activity_pochanbuzhu", prefab_path="Prefabs/Active/UI", },
+ [2003]={type=2, name="CDK兑换", detail="输入兑换码领取福利", unlock_key=0, fixed_activity=1, activity_sorting=1, tag=0, channel=0, prefab_name="activity_ExchangeCDK", prefab_path="Prefabs/Active/UI", },
+ [3001]={type=3, name="实名认证须知", detail="", unlock_key=0, fixed_activity=1, activity_sorting=1, tag=0, channel=0, prefab_name="activity_shimingrenzheng", prefab_path="Prefabs/Active/UI", },
+ [4001]={type=4, name="破产礼包", detail="", unlock_key=0, fixed_activity=1, activity_sorting=0, tag=0, channel=0, prefab_name="", },
+ [4002]={type=4, name="绝地反击", detail="", unlock_key=0, fixed_activity=1, activity_sorting=0, tag=0, channel=0, prefab_name="", },
+ [4003]={type=4, name="限时折扣礼包", detail="", unlock_key=0, fixed_activity=1, activity_sorting=0, tag=0, channel=0, prefab_name="activity_chaojizhekou", prefab_path="Prefabs/Active/UI", },
+ [4004]={type=4, name="摇一摇", detail="", unlock_key=0, fixed_activity=1, activity_sorting=0, tag=0, channel=0, prefab_name="", },
+ [4005]={type=4, name="暖心大礼包", detail="", unlock_key=0, fixed_activity=1, activity_sorting=0, tag=0, channel=0, prefab_name="", },
+ [4006]={type=4, name="首充", detail="", unlock_key=0, fixed_activity=1, activity_sorting=0, tag=0, channel=0, prefab_name="", },
+ [4007]={type=4, name="周卡/月卡", detail="", unlock_key=0, fixed_activity=0, activity_sorting=0, tag=0, channel=0, prefab_name="activity_zhoukayueka", prefab_path="Prefabs/Active/UI", },
+ [4008]={type=5, name="通行证", detail="完成任务来升级葫芦礼盒", unlock_key=0, fixed_activity=0, activity_sorting=0, tag=0, channel=0, prefab_name="", },
+ [4009]={type=6, name="7日签到", detail="签到活动", unlock_key=0, fixed_activity=0, activity_sorting=0, tag=0, channel=0, prefab_name="", },
+}

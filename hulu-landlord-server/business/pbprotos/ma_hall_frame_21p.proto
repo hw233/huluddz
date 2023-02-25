@@ -1,0 +1,103 @@
+package gameProtos;
+
+
+message Fri_prestige_data{
+    optional int32 id = 1; //好友id
+    optional int32 prestige = 2; //好友声望
+}
+
+message Hall_frame_rank_data{
+    optional int32 id = 1; //好友id
+    optional int32 prestige = 2; //声望值
+    optional string nickname = 3; //昵称
+    optional string headimgurl = 4; //头像
+    optional int32 headframe = 5; //头像框
+}
+  //获取名人堂信息
+message C2s_Rsp_Get_hall_frame_info{
+    optional int32 t = 1; //参考时间
+    optional int32 prestige = 2; //当前声望
+    optional int32 award_status = 3; //段位奖励领取状态,位操作
+    optional int32 max_prestige = 4; //历史达到的最高声望
+    optional int32 erank = 5; //名人堂排位
+    optional int32 seg_prestige = 6;
+    optional int32 currLv = 7;
+    optional int32 winc = 8;
+    optional int32 total = 9;
+    optional int32 count = 10;
+    optional int32 buy_count = 11;
+}
+  //获取名人堂信息
+message C2s_Get_hall_frame_info{
+}
+  //获取好友声望值
+message C2s_Hall_frame_get_fri_prestige{
+    repeated int32 list = 1; //好友id列表
+}
+  //获取好友声望值
+message C2s_Rsp_Hall_frame_get_fri_prestige{
+    repeated Fri_prestige_data list = 1; //0成功 1当前场次不能挑战 2挑战关卡不存在
+}
+  //获取玩家名人堂详细信息
+message C2s_Hall_frame_get_detail_info{
+    optional string id = 1; //好友id
+    optional string name = 2; //排行榜名
+}
+  //获取玩家名人堂详细信息
+message C2s_Rsp_Hall_frame_get_detail_info{
+    optional int32 rank = 1; //排行榜位置
+    optional int32 prestige = 2; //声望
+    repeated PlayerDress hdress = 3; //人物穿戴列表
+    repeated int32 pdress = 4; //宠物穿戴列表
+    optional int32 sex = 5; //性别
+    optional int32 seg_prestige = 6; //段位声望
+    optional int32 max_prestige = 7; //历史最高声望
+    optional int32 headframe = 8; //头像框
+    optional int32 total = 9; //总局数
+    optional int32 winc = 10; //胜局数
+}
+  //领取段位奖励
+message C2s_Hall_frame_get_award{
+    optional int32 award_id = 1; //段位id
+}
+  //领取段位奖励
+message C2s_Rsp_Hall_frame_get_award{
+    optional int32 result = 1; //0成功 1奖励不存在 2未达到领取条件 3奖励已经领取过
+    optional int32 award_status = 2; //奖励获取状态 位操作 0,1
+}
+  //获取名人堂排行榜数据
+message C2s_Hall_frame_get_list{
+    optional int32 start = 1; //开始索引
+    optional int32 num = 2; //获取数量
+}
+  //获取名人堂排行榜数据
+message C2s_Rsp_Hall_frame_get_list{
+    repeated Hall_frame_rank_data list = 1;
+}
+
+message FrameInfo{
+    optional int32 winc = 1; //胜局数
+    optional int32 total = 2; //总局数
+    optional int32 max_prestige = 3; //最大声望值
+    optional int32 sportsLv = 4; //赛季
+    optional int32 erank = 5; //排名
+}
+//获取荣耀信息
+message C2s_Get_honor{
+    optional string pid = 1; //目标玩家ID
+}
+//获取荣耀信息
+message C2s_Rsp_Get_honor{
+    repeated int32 tking = 1; //千王历史信息
+    repeated FrameInfo frame = 2; //名人堂历史信息
+    optional int32 currLv = 3; //当前赛季
+}
+//购买次数
+message C2s_Rsp_BuyFramePlayCount{
+    optional int32 result = 1; //错误信息
+    optional int32 buy_count = 2; //购买数量（增量）
+    optional int32 count = 3; //剩余次数
+}
+//购买次数
+message C2s_BuyFramePlayCount{
+}

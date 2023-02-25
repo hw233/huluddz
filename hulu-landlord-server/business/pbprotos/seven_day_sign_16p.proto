@@ -1,0 +1,25 @@
+package gameProtos;
+
+  //获取签到信息
+message C2s_Rsp_Seven_sign_data{
+    optional int32 mtime = 1; //当前活动生效时间
+    repeated int32 status = 2; //签到奖励领取状态 0不能领取,1可领取 2已领取
+}
+  //获取签到信息
+message C2s_Seven_sign_data{
+}
+  //签到
+message C2s_Seven_sign{
+    optional int32 day = 1; //签到第几天
+    optional bool Double = 2;
+}
+  //签到
+message C2s_Rsp_Seven_sign{
+    optional int32 result = 1; //0 签到成功 1 只能签当天 2 领取不存在 3 已经签到过
+    optional int32 day = 2; //签到第几天
+}
+  //签到
+message S2c_Seven_sign{
+    optional int32 result = 1; //0 签到成功 1 只能签当天 2 领取不存在 3 已经签到过
+    optional int32 day = 2; //签到第几天
+}

@@ -1,0 +1,44 @@
+package gameProtos;
+
+  //获取签到信息
+message C2s_Rsp_Sign_data{
+    optional int32 c_award = 1; //连续奖励领取状态
+    optional int32 status = 2; //签到奖励领取状态
+}
+  //获取签到信息
+message C2s_Sign_data{
+}
+  //补签
+message C2s_Endorsement{
+    optional int32 day = 1; //补签第几天
+}
+  //补签
+message C2s_Rsp_Endorsement{
+    optional int32 result = 1; //0 补签成功 1 不能补签当天 2 补签的天数不在当月内 3 已签到过 4道具不足
+    optional int32 day = 2; //补签的数据
+}
+  //获取连续签到奖励
+message C2s_Get_continue_award{
+    optional int32 day = 1; //1:7天连续签到 2:14天连续签到 3:21天连续签到
+}
+  //获取连续签到奖励
+message C2s_Rsp_Get_continue_award{
+    optional int32 result = 1; //0 补签成功 1 不能补签当天 2 补签的天数不在当月内 3 道具不足
+    optional int32 day = 2; //补签第几天
+    optional int32 c_award = 3; //连续奖励领取状态
+}
+  //签到
+message C2s_Sign{
+    optional int32 day = 1; //签到第几天
+    optional bool Double = 2;
+}
+  //签到
+message C2s_Rsp_Sign{
+    optional int32 result = 1; //0 签到成功 1 只能签当天 2 签到的天数不在当月内 3 已经签到过
+    optional int32 day = 2; //补签第几天
+}
+  //签到
+message S2c_Sign{
+    optional int32 result = 1; //0 签到成功 1 只能签当天 2 签到的天数不在当月内 3 已经签到过
+    optional int32 day = 2; //签第几天
+}

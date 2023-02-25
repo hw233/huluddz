@@ -1,0 +1,92 @@
+package gameProtos;
+
+
+message C2s_ChangeDirection{
+    optional string pid = 1;
+    optional string objId = 2; //目标玩家ID
+    optional int32 skill_id = 3; //技能ID
+}
+//搓牌请求换牌
+message C2s_ChangeCardC{
+    optional string pid = 1;
+    optional int32 cardId = 2; //需要换牌实际值
+    optional int32 skill_id = 3; //技能ID
+}
+//隔空取物获得想要的牌
+message C2s_GetWantCardC{
+    optional string pid = 1;
+    optional int32 card = 2; //需要换牌ID
+    optional int32 skill_id = 3; //技能ID
+}
+//顺手气那样不想要的牌
+message C2s_DisWantCardC{
+    optional string pid = 1;
+    repeated int32 cards = 2; //不想要牌ID
+    optional int32 skill_id = 3; //技能ID
+}
+//跳过环节
+message C2s_NextMoudle{
+    optional string pid = 1;
+}
+
+message S2c_SkillTrigger{
+    optional string pid = 1; //触发人ID
+    optional int32 skill_id = 2; //技能ID
+    optional int32 luckStar = 3; //幸运星点数
+}
+
+message S2c_LookWall{
+    optional string pid = 1;
+    optional int32 skill_id = 2;
+    repeated int32 lookCards = 3;
+    optional int32 count = 4;
+    optional string banker =5; //起始庄家id
+}
+
+//技能被看破
+message S2c_SkillFail{
+    optional string pid = 1; //触发人ID
+    optional int32 skill_id = 2; //技能ID
+    optional string brokePId = 3; //看破人ID
+}
+//通风，报信
+message S2c_WarningHPG{
+    optional string pid = 1; //触发人ID
+    optional int32 skill_id = 2; //技能ID
+    repeated int32 HPGCards = 3; //是否会被碰杠胡
+}
+
+message OneTing{
+    optional int32 tId = 1; //听牌ID
+    optional int32 tingNum = 2; //数量
+}
+
+message TingInfo{
+    optional int32 CId = 1; //牌ID
+    repeated OneTing tingTbl = 2; //数量
+}
+//千里眼
+message S2c_CountTingNum{
+    optional string pid = 1; //触发人ID
+    optional int32 skill_id = 2; //技能ID
+    repeated TingInfo tempInfo = 3; //听牌数量
+}
+//顺风耳
+message S2c_CountWallColor{
+    optional string pid = 1; //触发人ID
+    optional int32 skill_id = 2; //技能ID
+    repeated int32 colorTbl = 3; //1-4堆牌花色
+}
+//搓牌
+message S2c_ChangeCard{
+    optional string pid = 1; //触发人ID
+    optional int32 skill_id = 2; //技能ID
+    optional int32 card = 3; //card实际值，失败为原来第一的值
+}
+//手牌类技能
+message S2c_HandSkill{
+    optional string pid = 1; //触发人ID
+    optional int32 skill_id = 2; //技能ID
+    repeated int32 hand = 3; //手牌
+    optional int32 value = 4; //数量
+}

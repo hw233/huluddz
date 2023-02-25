@@ -1,0 +1,762 @@
+local skynet = require "skynet"
+local queue = require "skynet.queue"
+local sharetable = require "skynet.sharetable"
+local cjson     = require "cjson"
+
+local roomQueueFunc = queue()
+
+local ma_globalCfg		= require "ma_global_cfg"
+local ma_data           = require "ma_data"
+local ma_user 			= require "ma_user"
+local ma_userroomdata   = require "ma_userroomdata"
+local ma_useritem       = require "ma_useritem"
+local ma_userhero       = require "ma_userhero"
+local ma_userheroget    = require "ma_userheroget"
+
+local datax = require "datax"
+local objx = require "objx"
+local arrayx = require "arrayx"
+local eventx = require "eventx"
+local create_dbx = require "dbx"
+local dbx = create_dbx(get_db_manager)
+local ma_common = require "ma_common"
+local common = require "common_mothed"require "define"
+
+require "table_util"
+
+local COLL_Name = require "config/collections"
+local TableNameArr = COLL_Name
+local AdvType = {
+    Pochan=29
+}
+--#region 配置表 require
+--#endregion
+
+local REQUEST_New, CMD = {}, {}
+local PlayerToRoomMessageAfter = {} -- 玩家发送到房间的消息返回后处理
+local RoomToPlayerMessagePre = {} -- 房间发送到玩家的消息提前处理
+
+local userInfo = ma_data.userInfo
+
+local ma_obj = {
+    CallRoomRequestNameArr = {
+        RoomEmoticonSend            = "EmoticonSend",
+        RoomCardRecordInfo          = "CardRecordInfo",
+    },
+    SendRoomRequestNameArr = {
+    },
+
+    lastDeductExp = 0, -- 上次扣除的经验
+
+    PlayerToRoomMessageAfter = PlayerToRoomMessageAfter,
+    RoomToPlayerMessagePre = RoomToPlayerMessagePre,
+
+    roomGameRecordObj = nil,
+    RoomGameRecordKeyMap = table.toObject({
+        --#region 通用接口
+        "RoomEmoticonSend_C",
+        --#endregion 通用接口
+
+        --#region 斗地主接口
+        "RoomMatchOk_C",
+        "RoomDealCard_C",
+        "RoomSyncMultiple_C",
+        "RoomShowCard_C",
+        "RoomSetTrusteeship_C",
+        "RoomPleasePlayerAction_C",
+        "RoomSyncPlayerAction_C",
+        "RoomSyncPlayerData_C",
+        "RoomGameOver_C",
+        --#endregion 斗地主接口
+
+        --#region 七雀牌接口
+        "ssw_match_ok",
+        "ssw_gamestart",
+        "ssw_p_takecard",
+        "ssw_p_playcard",
+        "ssw_p_hu",
+        "ssw_p_giveup",
+        "ssw_p_exit",
+        "ssw_please_takecard",
+        "ssw_please_playcard",
+        "ssw_gameover",
+        --#endregion 七雀牌接口
+
+    }, function (key, value)
+        return value
+    end)
+
+}
+
+
+function ma_obj.init(cmd, request_new)
+    for key, value in pairs(ma_obj.CallRoomRequestNameArr) do
+        ma_obj.addRequestHander(REQUEST_New, key, value, skynet.call, ma_obj.requestHanderPre, ma_obj.requestHanderAfter)
+    end
+
+    for key, value in pairs(ma_obj.SendRoomRequestNameArr) do
+        ma_obj.addRequestHander(REQUEST_New, key, value, skynet.send, ma_obj.requestHanderPre)
+    end
+
+    table.tryMerge(cmd, CMD)
+    table.tryMerge(request_new, REQUEST_New)
+
+    ma_data.roomQueueFunc = roomQueueFunc
+
+    ma_userroomdata.init(cmd, request_new)
+
+    ma_obj.initLinsten()
+
+    -- 初始化重置
+    ma_obj.exitRoom()
+end
+
+ma_obj.initLinsten = function ()
+    eventx.listen(EventxEnum.UserItemUpdate, function (itemId, sData, nowNum, oldNum, changeVal)
+        if userInfo.roomAddr then
+            if itemId == ItemID.Gold then
+                ma_common.sendRoomPlayer("SyncRoomData", {
+                    id = itemId,
+                    num = nowNum,
+                })
+            end
+        end
+    end)
+
+    eventx.listen(EventxEnum.UserNewDay, function ()
+        if userInfo.brokeSubsidyCountDay and userInfo.brokeSubsidyCountDay > 0 then
+            userInfo.brokeSubsidyCountDay = 0
+            dbx.update(TableNameArr.User, userInfo.id, {brokeSubsidyCountDay = userInfo.brokeSubsidyCountDay})
+        end
+    end)
+
+    eventx.listen(EventxEnum.UserOffline, function ()
+        if userInfo.roomState == UserRoomState.Matching then
+            REQUEST_New.RoomMatchCancel()
+        end
+    end)
+
+    eventx.listen(EventxEnum.AdvertLook, function (sdata, args)
+        if not sdata or not args then
+            return
+        end
+        local _type = sdata.type
+        if _type == AdvType.Pochan then
+            local newArgs = {}
+            newArgs.AdvSign = tonumber(args.AdvSign)
+            local code, Proto = REQUEST_New.RoomBrokeSubsidyGet(newArgs)
+            if Proto then
+                Proto.e_info = code
+            end
+            ma_data.send_push('SyncRoomBrokeSubsidyGet', Proto)
+        end
+
+    end)
+
+    -- eventx.listen(EventxEnum.RoomPlayerMessage, function (source, name, args)
+    --     local func = RoomToPlayerMessagePre[name]
+    --     if func then
+    --         func(args)
+    --     end
+    -- end)
+
+    eventx.listen(EventxEnum.RoomPlayerMessage, function (source, name, args)
+        if ma_obj.RoomGameRecordKeyMap[name] then
+            table.insert(ma_obj.roomGameRecordObj.record, {cmd = name, args = args, dt = os.time()})
+        end
+    end, eventx.EventPriority.After)
+
+end
+
+
+--#region 核心部分
+
+ma_obj.exitRoom = function ()
+    userInfo.roomAddr = nil
+	userInfo.roomState = UserRoomState.Idle
+
+    ma_common.updateUserBase(userInfo.id, {roomState = userInfo.roomState})
+end
+
+--- 添加房间请求处理方法
+---@param key string 协议接口名称
+---@param mothedName string 调用的房间方法名称
+---@param func function 调用其他服务的方法
+---@param funcPre fun(mothedName: string, args: table):number, table 错误码，返回对象
+---@param funcAfter fun(mothedName: string, result: any) 返回值
+ma_obj.addRequestHander = function (requestObj, key, mothedName, func, funcPre, funcAfter)
+    if requestObj[key] then
+        skynet.logw("addRequestHander error! ", key, mothedName)
+    else
+        requestObj[key] = function (args)
+
+            if funcPre then
+                local retVal, obj = funcPre(mothedName, args)
+                if retVal and retVal ~= RET_VAL.Succeed_1 then
+                    return retVal, obj
+                end
+            end
+
+            local ok, result = pcall(func, userInfo.roomAddr, "lua", "PlayerRequest", userInfo.id, mothedName, args)
+            if not ok then
+                skynet.logw("addRequestHander error!", mothedName, result)
+                return RET_VAL.ERROR_3
+            end
+
+            if funcAfter then
+                funcAfter(mothedName, result)
+            end
+
+            return result
+        end
+    end
+end
+
+ma_obj.requestHanderAfter = function (mothedName, result)
+    local func = PlayerToRoomMessageAfter[mothedName]
+    if func then
+        return func(result)
+    end
+end
+
+
+ma_obj.roomGameRecordStart = function (gameType, roomLevel)
+    ma_obj.roomGameRecordObj = {
+        gameType = gameType,
+        roomLevel = roomLevel,
+        record = {}
+    }
+end
+
+ma_obj.roomGameRecordEnd = function (id, uId, startDt, endDt, isWin)
+    ma_obj.roomGameRecordObj.id = id
+    ma_obj.roomGameRecordObj.uId = uId
+    ma_obj.roomGameRecordObj.startDt = startDt
+    ma_obj.roomGameRecordObj.endDt = endDt
+    ma_obj.roomGameRecordObj.isWin = isWin
+    skynet.fork(function ()
+        ma_data.roomQueueFunc(function ()
+            ma_obj.roomGameRecordObj.recordJson = cjson.encode(ma_obj.roomGameRecordObj.record)
+            ma_obj.roomGameRecordObj.record = nil
+            dbx.add(TableNameArr.UserRoomGameRecord, ma_obj.roomGameRecordObj)
+        end)
+    end)
+end
+
+
+
+ma_obj.gameRewardHandler = function (roomDataCfg, isWin, itemArr, runeAddItemArr, moodAddItemArr)
+    local rewardLimitNumObj = {}
+    local rewardLimitFrom = {}   -- 限制原因
+
+    local addItme = function (obj)
+        local limitObj = rewardLimitNumObj[obj.id]
+        if not limitObj then
+            local limit, limitFrom = nil, ""
+            if obj.id == ItemID.RuneExp or obj.id == ItemID.GourdWater then
+                local limitObjDay = arrayx.find(roomDataCfg.rewardLimitDay, function (index, value)
+                    return value.id == obj.id
+                end)
+                if limitObjDay then
+                    local limitDay = math.max(limitObjDay.limit - ma_userroomdata.getRewardNum(obj.id, roomDataCfg.game_id, roomDataCfg.room_type), 0)
+                    limit = limitDay
+                    limitFrom = "room"
+                end
+            end
+
+            if obj.id == ItemID.RuneExp then
+                local runeExpWeek = ma_userheroget.GetLJExpBook_Week(userInfo.skin)
+                local heroLimit = math.max(datax.globalCfg[101009].val - runeExpWeek, 0)
+                if not limit or limit > heroLimit then
+                    limit = heroLimit
+                    limitFrom = "hero"
+                end
+            end
+            limitObj = {limit = limit, limitFrom = limitFrom}
+            rewardLimitNumObj[obj.id] = limitObj
+        end
+
+        if limitObj.limit then
+            obj.num = math.min(obj.num, limitObj.limit)
+            limitObj.limit = limitObj.limit - obj.num
+
+            if limitObj.limit <= 0 then
+                rewardLimitFrom[obj.id] = limitObj.limitFrom
+            end
+        end
+    end
+
+    for index, obj in ipairs(itemArr) do
+        addItme(obj)
+    end
+
+    local bonusObj = userInfo.bonusObj or {}
+    if bonusObj.rune and isWin then
+        local goldRate = (bonusObj.rune[BonusType.GameWinGold] or 0)
+        if goldRate > 0 then
+            local goldItemObj = arrayx.find(itemArr, function (index, value)
+                return value.id == ItemID.Gold
+            end)
+            local num = goldItemObj and goldItemObj.num * goldRate // 10000 or 0
+            if num > 0 then
+                table.insert(runeAddItemArr, {id = ItemID.Gold, num = num})
+            end
+        end
+    end
+
+    if bonusObj.mood then
+        local runeExpNum = (bonusObj.mood[isWin and BonusType.GameRuneExpFixedWin or BonusType.GameRuneExpFixedLose] or 0)
+        if runeExpNum > 0 then
+            table.insert(moodAddItemArr, {id = ItemID.RuneExp, num = runeExpNum})
+        end
+    end
+
+    for key, obj in pairs(moodAddItemArr) do
+        addItme(obj)
+    end
+
+    return objx.toKeyValuePair(rewardLimitFrom)
+end
+
+ma_obj.gameLvCompute = function (isWin, from, sendDataArr)
+    local lvExpAddRateObj, lvExpProtect
+    -- 段位结算
+    local sData = datax.titleRewards[userInfo.lv]
+    if not sData then
+        skynet.loge("gameLvCompute error!", userInfo.lv)
+    else
+        if isWin then
+            userInfo.winStreak = (userInfo.winStreak or 0) + 1
+        else
+            userInfo.winStreakLast = userInfo.winStreak
+            userInfo.winStreak = 0
+        end
+        dbx.update(TableNameArr.User, userInfo.id, {
+            winStreak = userInfo.winStreak, winStreakLast = userInfo.winStreakLast,
+        })
+        ma_common.send_myclient("SyncUserWinStreak", {winStreak = userInfo.winStreak, winStreakLast = userInfo.winStreakLast})
+
+        if isWin then
+            local itemArr = table.clone(sData.add_trophy)
+            itemArr, lvExpAddRateObj = ma_obj.gameExpHandler(itemArr)
+            ma_useritem.addList(itemArr, 1, from, sendDataArr)
+        else
+            local itemArr = table.clone(sData.les_trophy)
+            itemArr, lvExpProtect = ma_obj.gameExpProtectHandler(itemArr)
+            ma_useritem.removeList(itemArr, 1, from)
+        end
+    end
+    ma_user.computeLv()
+
+    return lvExpAddRateObj, lvExpProtect
+end
+
+ma_obj.gameExpHandler = function (itemArr)
+    local addRate = 10000
+    local lvExpAddRateObj = {}
+
+    local winStreakAddRateDataArr = ma_globalCfg.getValue(105001)
+    local winStreakAddRateDataMax = table.max(winStreakAddRateDataArr, function (key, value)
+        return value.rate
+    end)
+    local winStreakAddRateData = userInfo.winStreak >= winStreakAddRateDataMax.win and winStreakAddRateDataMax or arrayx.find(winStreakAddRateDataArr, function (index, value)
+        return value.win == userInfo.winStreak
+    end)
+
+    lvExpAddRateObj.runeRate = 0
+    lvExpAddRateObj.vipRate = 0
+    lvExpAddRateObj.winStreakRate = 0
+
+    local bonusObj = userInfo.bonusObj or {}
+    if bonusObj.rune then
+        lvExpAddRateObj.runeRate = (bonusObj.rune[BonusType.GameWinExp] or 0)
+        addRate = addRate + lvExpAddRateObj.runeRate
+    end
+
+    local vipCfg = ma_common.getVipCfg()
+    if vipCfg then
+        lvExpAddRateObj.vipRate = vipCfg.title_reward_add
+        addRate = addRate + lvExpAddRateObj.vipRate
+    end
+
+    if winStreakAddRateData then
+        lvExpAddRateObj.winStreakRate = winStreakAddRateData.rate
+        addRate = addRate + lvExpAddRateObj.winStreakRate
+    end
+
+    for index, value in ipairs(itemArr) do
+        if value.id == ItemID.LvExp then
+            value.num = math.ceil(value.num * addRate / 10000)
+        end
+    end
+
+    return itemArr, objx.toKeyValuePair(lvExpAddRateObj)
+end
+
+ma_obj.gameExpProtectHandler = function (itemArr)
+    local sData = datax.titleRewards[userInfo.lv]
+    local num = 0
+    if sData and sData.is_protect == 1 then
+        local val = ma_useritem.num(ItemID.LvExp) - sData.exp
+        for index, itemObj in ipairs(itemArr) do
+            if itemObj.id == ItemID.LvExp then
+                if val < itemObj.num then
+                    num = num + (itemObj.num - val)
+                    itemObj.num = val
+                end
+                val = val - itemObj.num
+            end
+        end
+    end
+    return itemArr, num
+end
+
+--#endregion
+
+REQUEST_New.RoomLobbyInfoGet = function (args)
+    local gameType = args.gameType
+    skynet.logd("RoomLobbyInfoGet0 ========================", gameType)
+    if not table.first(GameType, function (key, value)
+        return value == gameType
+    end) then
+        return RET_VAL.ERROR_3
+    end
+
+    local datas = skynet.call("ddz_room_info", "lua", "GetData", gameType)
+
+    local rankdata = {}
+    local rankddataret = common.getUserRankNextDistance(userInfo.id,"dw", true, userInfo.nickname, userInfo.head, userInfo.headframe)
+    if rankddataret then
+        local disRank = rankddataret["dw"].data
+        if disRank then
+            rankdata.dwrank = disRank.rankP
+            rankdata.dwrankdis= disRank.rankDis
+        end
+    end
+    return {datas = datas, rankdata = rankdata}
+end
+
+REQUEST_New.RoomStartMatch = function (args)
+    local gameType, roomLevel = args.gametype, args.roomtype
+    skynet.logd("match_0 ========================", gameType, roomLevel)
+
+    -- if me.server_closed then
+    --     return {err = SYSTEM_ERROR.service_maintance}
+    -- end
+
+    if userInfo.roomState == UserRoomState.Matching then
+        return RET_VAL.Exists_4
+    end
+    skynet.logd("match_1 ========================", userInfo.roomState)
+    if userInfo.roomState and userInfo.roomState ~= UserRoomState.Idle then
+        return RET_VAL.NotExists_5
+    end
+    skynet.logd("match_2 ========================", userInfo.roomState)
+    local sData = (datax.roomGroup[gameType] or {})[roomLevel]
+    if not sData then
+        return RET_VAL.ERROR_3
+    end
+    skynet.logd("match_3 ========================", sData)
+    local goldNum = ma_useritem.num(ItemID.Gold)
+    if goldNum < sData.min or (goldNum > sData.max and sData.max ~=-1) then
+		return RET_VAL.Fail_2
+	end
+    skynet.logd("match_4 ========================", goldNum, sData.max)
+    userInfo.roomState = UserRoomState.Matching
+    -- me.anonymous = args.anonymous
+
+    -- if matchserver then
+    --     assert(me.fixed_chair, "need set fixed_chair")
+    -- end
+
+    -- local have_yearcard = me.have_yearcard()--貌似时年加倍卡的逻辑
+    local have_yearcard = 0
+
+
+
+    local roomGameCountObj = (userInfo.roomGameCountObj or {})[tostring(gameType)] or {num = 0, obj = {}}
+
+    if gameType == GameType.NoShuffle or gameType == GameType.SevenSparrow then
+        local gameSubType = GameSubType.Default
+
+        local paramObj = {
+            id = userInfo.id,
+            addr = skynet.self(),
+            gold = ma_useritem.num(ItemID.Gold),
+
+
+            newUserCardCfgIdArr = nil,
+
+            gameCountSum = userInfo.gameCountSum,
+            winCountSum = userInfo.winCountSum,
+            effectTimeCfg = args.effectTimeCfg,
+
+            showcardx5 = args.showcardx5 or false,
+            -- gamec = me.count.leperking_all,
+            gamec = 1,
+            -- is_anchor = nil,
+            -- fixed_chair = ma_data.fixed_chair,
+            have_yearcard = 0,
+            ssw_2game_king = 256+40, --癞子王技能概率?
+        }
+
+        if gameType == GameType.SevenSparrow then
+            local cfgObj = arrayx.find(datax.globalCfg[200001], function (index, value)
+                return value.gameId == gameType
+            end)
+            local newUserGameCount = table.sum(roomGameCountObj.obj or {}, function (key, value)
+                key = tonumber(key)
+                return (key == GameRoomLevel.V1 or key == GameRoomLevel.V2) and value or 0
+            end)
+            if roomLevel <= GameRoomLevel.V2 and newUserGameCount <= (cfgObj and cfgObj.val or 10) then
+                local initCards = datax.init_cards[gameType] or {}
+                local newUserGameArr = userInfo.newUserGameArr or {}
+                local arr = table.where(initCards, function (key, value)
+                    return not arrayx.findVal(newUserGameArr, key)
+                end)
+                if #arr > 0 then
+                    gameSubType = GameSubType.NewUser
+                    paramObj.newUserCardCfgIdArr = arrayx.select(arr, function (index, value)
+                        return value.id
+                    end)
+                end
+            else
+            end
+        end
+
+        local datas = sharetable.query("RoomMatchCfg") or {}
+		local idArr = (datas[userInfo.id] or {})[gameType]
+		if idArr and next(idArr) then
+			gameSubType = GameSubType.MatchServer
+            paramObj.newUserCardCfgIdArr = nil
+		end
+
+        if gameSubType == GameSubType.Default then
+            if dbx.get(TableNameArr.ServerRoomPrison, userInfo.id) then
+                gameSubType = GameSubType.Prison
+            end
+        end
+
+        skynet.logd("match_ ========================", roomLevel, userInfo.fixed_chair)
+        skynet.send("ddz_match_mgr", "lua", "StartMatch", gameType, roomLevel, paramObj, gameSubType)
+
+        ma_data.roomConnect = true
+    else
+        return RET_VAL.ERROR_3
+    end
+
+    return RET_VAL.Succeed_1
+end
+
+REQUEST_New.RoomMatchCancel = function ()
+    if userInfo.roomState == UserRoomState.Matching and skynet.call("ddz_match_mgr", "lua", "MatchCancel", userInfo.id) then
+        userInfo.roomState = UserRoomState.Idle
+    else
+        return RET_VAL.Fail_2
+    end
+    return RET_VAL.Succeed_1
+end
+
+REQUEST_New.RoomCardRecordAutoUseStateSet = function (args)
+    local state = not not args.state
+
+    userInfo.cardRecordAutoUse = state
+    local updateData = {cardRecordAutoUse = userInfo.cardRecordAutoUse}
+    dbx.update(TableNameArr.User, userInfo.id, updateData)
+
+    return RET_VAL.Succeed_1, updateData
+end
+
+REQUEST_New.RoomProtectLv = function (args)
+    if ma_obj.lastDeductExp <= 0 then
+        return RET_VAL.Fail_2
+    end
+
+    local sData = datax.titleRewards[userInfo.lv]
+    if not sData then
+        return RET_VAL.ERROR_3
+    end
+
+    if not ma_useritem.removeList(sData.need_protect_num, 1, "RoomProtectLv_段位保护") then
+        return RET_VAL.Lack_6
+    end
+
+    local itemId = ItemID.LvExp
+
+    local expOld = ma_useritem.num(itemId)
+    local lvOld = userInfo.lv
+
+    local lastDeductExp = ma_obj.lastDeductExp
+    ma_obj.lastDeductExp = 0
+
+    ma_useritem.add(ItemID.LvExp, lastDeductExp, "RoomProtectLv_段位保护")
+
+    ma_user.computeLv()
+
+    return RET_VAL.Succeed_1, {expOld = expOld, lvOld = lvOld, exp = ma_useritem.num(itemId), lv = userInfo.lv}
+end
+
+REQUEST_New.RoomProtectWinStreak = function (args)
+    local winStreak, winStreakLast = (userInfo.winStreak or 0), (userInfo.winStreakLast or 0)
+    if userInfo.winStreak > 0 or winStreakLast <= 0 then
+        return RET_VAL.ERROR_3
+    end
+
+    if not ma_useritem.remove(ItemID.GameProtectWinStreak , 1, "RoomProtectWinStreak_连胜保护") then
+        return RET_VAL.Lack_6
+    end
+
+    userInfo.winStreak = winStreakLast
+    userInfo.winStreakLast = 0
+
+    local updateData = {winStreak = winStreak, winStreakLast = winStreakLast}
+    dbx.update(TableNameArr.User, userInfo.id, updateData)
+    eventx.call(EventxEnum.ProtectWinStreak, {})
+    return RET_VAL.Succeed_1, updateData
+end
+
+REQUEST_New.RoomBrokeSubsidyGet = function (args)
+    local advSign = 0
+    if args then
+        advSign = args.AdvSign
+    end
+
+    local brokeSubsidyCountDay = userInfo.brokeSubsidyCountDay or 0
+    if brokeSubsidyCountDay >= datax.globalCfg[101006].val then
+        return RET_VAL.Fail_2
+    end
+
+    local minData = table.min(datax.roomCost, function (key, value)
+        return value.min
+    end)
+    if ma_useritem.num(ItemID.Gold) >= minData.min then
+        return RET_VAL.NoUse_8
+    end
+
+    userInfo.brokeSubsidyCountDay = brokeSubsidyCountDay + 1
+    local updateData = {brokeSubsidyCountDay = userInfo.brokeSubsidyCountDay}
+    dbx.update(TableNameArr.User, userInfo.id, updateData)
+
+    local cfgAddItemList = datax.globalCfg[101007]
+    local addItemList = {}
+    if cfgAddItemList then
+        addItemList = clone(cfgAddItemList)
+    end
+
+    local rewardInfo = {}
+    local sendDataArr = ma_common.getShowRewardArr(rewardInfo, ShowRewardFrom.Default)
+    local mult = 1
+    if advSign == 1 then
+        mult = 3
+    end
+    ma_useritem.addList(addItemList, mult, "RoomBrokeSubsidyGet_破产救济金", sendDataArr)
+
+    local isShowReward = true
+    local goldItem = arrayx.find(addItemList, function (index, value)
+        return value.id == ItemID.Gold
+    end)
+    if goldItem then
+        --加成
+        local bonusObj = userInfo.bonusObj or {}
+        if bonusObj.rune then
+            if bonusObj.rune[BonusType.BrokeGold] then
+                isShowReward = false
+            end
+            local goldRate = (bonusObj.rune[BonusType.BrokeGold] or 0)
+            if goldRate > 0 then
+                local num = goldItem.num * goldRate // 10000
+                if num > 0 then
+                    local addItemArr = ma_common.getShowRewardArr(rewardInfo, ShowRewardFrom.Rune)
+                    ma_useritem.add(ItemID.Gold, num, "RoomBrokeSubsidyGet_破产救济金符文加成", addItemArr)
+                end
+            end
+        end
+
+        -- vip 加成
+        local vipCfg = ma_common.getVipCfg()
+        if vipCfg.bankruptcy_subsidy > 0 then
+            local num = goldItem.num * vipCfg.bankruptcy_subsidy // 10000
+            if num > 0 then
+                local addItemArr = ma_common.getShowRewardArr(rewardInfo, ShowRewardFrom.Vip)
+                ma_useritem.add(ItemID.Gold, num, "RoomBrokeSubsidyGet_破产救济金VIP加成", addItemArr)
+            end
+        end
+    end
+
+    if isShowReward then
+        ma_common.showReward(rewardInfo)
+    end
+
+    return RET_VAL.Succeed_1, updateData
+end
+
+
+-- 匹配门票材料消耗
+CMD.RoomMatchOkCostHandler = function (source, cost)
+    cost = math.min(cost, ma_useritem.num(ItemID.Gold))
+    ma_useritem.remove(ItemID.Gold, cost, "RoomMatchOkCost_房间门票消耗")
+end
+
+CMD.RoomPlayerMessage = function (source, name, args)
+    roomQueueFunc(function ()
+        eventx.call(EventxEnum.RoomPlayerMessage, source, name, args)
+
+        if ma_data.roomConnect then
+            ma_common.send_myclient(name, args)
+        else
+            skynet.logw("RoomPlayerMessage " .. name .. " not send!")
+        end
+    end)
+end
+
+CMD.RoomUserInfoGet = function (source, gameType, roomLevel)
+
+    if userInfo.roomAddr then
+        skynet.loge("user.roomAddr error!", userInfo.roomAddr, userInfo.roomState)
+    end
+    -- 这部分不用保存，
+    userInfo.roomAddr = source
+    userInfo.roomState = UserRoomState.Gameing
+    userInfo.roomGameType = gameType
+    userInfo.roomGameLevel = roomLevel
+
+    ma_common.updateUserBase(userInfo.id, {roomState = userInfo.roomState})
+
+    --测试方法 返回player必要数据
+    local result = ma_common.toUserBase(userInfo)
+
+    result.gold = ma_useritem.num(ItemID.Gold)
+    result.heroId = userInfo.heroId
+    local heroData = ma_userhero.get(result.heroId) or {}
+    result.heroSkillLv = heroData.skillLv or 1
+    result.heroSkillRate = (datax.mood[heroData.moodLv or 1] or {skill_probability = 0}).skill_probability
+    result.heroSkillCount = heroData.skillCount or 0
+
+    result.head = result.head or "https://yunteng-static.oss-cn-hangzhou.aliyuncs.com/heads/"
+
+    if userInfo.cardRecordAutoUse then
+        result.useCardRecord = ma_useritem.remove(ItemID.GameCardRecord, 1, "RoomCardRecordInfo_记牌器", true)
+    end
+
+    -- if me.anonymous then
+    --     local i = math.random(1, #cft_robot)
+    --     local robot = cft_robot[i]
+
+    --     info.nick = robot.name
+    --     info.head = cfg_robot.head_prefix .. robot.icon
+    --     info.vip = 0
+    -- end
+
+    return result
+end
+
+CMD.NewUserCardCfgUse = function (source, newUserCardId)
+    if newUserCardId then
+        local newUserGameArr = userInfo.newUserGameArr or {}
+        table.insert(newUserGameArr, newUserCardId)
+        userInfo.newUserGameArr = newUserGameArr
+        dbx.update(TableNameArr.User, userInfo.id, {newUserGameArr = newUserGameArr})
+    end
+end
+
+return ma_obj

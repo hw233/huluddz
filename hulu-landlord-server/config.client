@@ -1,0 +1,22 @@
+env = "publish"
+include "config.path"
+
+thread = 16
+harbor = 0
+start = "main_client"	-- main script
+bootstrap = "snlua bootstrap"	-- The service for bootstrap
+enablessl = true
+enablecipher = true
+--cluster = root .. "clustername.lua"
+
+gameid 	= "qxd_hlddz"
+serverId = "s016001"
+isTest = 0 -- 为 1 开启测试
+loglevel = 0
+process_id = 7
+
+--本地调试打开下面2个,注释vscode调试相关参数
+--daemon = "./skynet.pid"
+logger = "GameSvr"
+--debug_console_port = 13010
+--httpClientPort = 9010

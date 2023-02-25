@@ -1,0 +1,97 @@
+package gameProtos;
+
+//未上榜则没有数据
+message Frank{
+    optional string rankName = 1; //榜名
+    optional int32 rank = 2; //排名
+}
+
+message Rank_item_data{
+    optional string id = 1; //好友id
+    optional int32 prestige = 2; //声望值
+    optional int32 worth = 3; //身价
+    optional int32 luxury = 4; //奢华度
+    optional int32 pet_level = 5; //宠物星级(阶*100 + 星)
+    optional string nickname = 6; //昵称
+    optional string headimgurl = 7; //头像
+    optional int32 headframe = 8; //头像框
+    optional int32 winC = 9; //三缺一通关次数
+    repeated Frank frank = 10;
+    optional int32 seg_prestige = 11;
+    optional int32 watch_ads = 12;//广告数 嘻嘻大奖
+}
+
+message C2s_Sync_ranklist_info{
+    optional string name = 1; //排行榜名称 prestige:雀神排行榜, worth:身价排行榜 luxury:奢华度排行榜 pet_level:宠物等级排行榜
+    optional int32 start = 2; //获取开始位置从1开始 
+    optional int32 num = 3; //获取数量
+}
+
+message C2s_Rsp_Sync_ranklist_info{
+    repeated Rank_item_data list = 1; //0成功 1当前场次不能挑战 2挑战关卡不存在
+    optional int32 own_rank = 2; //自身排名
+    optional int32 own_value = 3; //自身的值
+    optional string name = 4; //排行榜名称
+}
+//获取好友排行榜值
+message C2s_Get_fri_ranklist_info{
+    repeated string list = 1; //好友id列表
+    optional string name = 2; //排行榜名称
+}
+//获取好友排行榜值
+message C2s_Rsp_Get_fri_ranklist_info{
+    repeated Rank_item_data list = 1; //好友排行榜信息,如果不存在数据的好友,用默认值
+    optional string name = 2; //排行榜名称
+}
+
+message RankTwo_data{
+    optional string id = 1; //id
+    optional string nickname = 2; //昵称
+    optional string headimgurl = 3; //头像
+    optional int32 multipleKing = 4; //番数
+    optional Card_pack cards = 5; //手牌
+    optional int32 useTime = 6; //使用时间
+    optional Card_pack cards1 = 7; //手牌
+    optional int32 useTime1 = 8; //使用时间
+    optional Card_pack cards2 = 9; //手牌
+    optional int32 useTime2 = 10; //使用时间
+    optional Card_pack cards3 = 11; //手牌
+    optional int32 useTime3 = 12; //使用时间
+    optional int32 headframe = 13; //头像框
+    optional int32 lianWinCount = 14; //连胜
+}
+//获取番王榜
+message C2s_Get_rankTwo_info{
+    optional string name = 1; //排行榜名称
+    optional int32 start = 2; //获取开始位置从1开始 
+    optional int32 num = 3; //获取数量
+}
+//获取番王榜
+message C2s_Rsp_Get_rankTwo_info{
+    repeated RankTwo_data list = 1; //排行信息
+    optional int32 own_rank = 2; //自身排名
+    optional int32 own_value1 = 3; //自身的值（时间或者是倍数）
+    optional Card_pack own_value2 = 4; //自身牌
+    optional string name = 5; //排行榜名称
+}
+
+message C2s_Sync_rankThreeTwo_info{
+    optional string name = 1; //排行榜名称 threeOne:三缺一排行榜
+    optional int32 start = 2; //获取开始位置从1开始 
+    optional int32 num = 3; //获取数量
+}
+
+message C2s_Rsp_Sync_rankThreeTwo_info{
+    repeated Rank_item_data list = 1;
+    optional int32 own_rank = 2; //自身排名
+    optional int32 own_value = 3; //自身的值
+    optional string name = 4; //排行榜名称
+}
+//获取好友排行榜值
+message C2s_Get_fri_rankThreeTwo_info{
+    repeated string list = 1; //好友id列表
+}
+//获取好友排行榜值
+message C2s_Rsp_Get_fri_rankThreeTwo_info{
+    repeated Rank_item_data list = 1; //好友排行榜信息,如果不存在数据的好友,用默认值
+}

@@ -1,0 +1,45 @@
+root = "./"
+env_conf_root = root .. "confs/" .. env .. "/"
+server_root = root .. "server/"
+business_root = root .. "business/"
+common_root = root .. "common/"
+
+luaservice = server_root.."service/?.lua;"..business_root.."?.lua;"..business_root.."services/?.lua;" .. business_root .. "ai/?.lua;"
+..root.."?.lua;" ..business_root.."extra/?.lua;" .. common_root .. "service/?.lua;"
+
+lualoader = server_root .. "lualib/loader.lua"
+lua_path = server_root.."lualib/?.lua;"..
+	root.."lualib/?/init.lua" ..
+	common_root .. "lualib/?.lua;" ..
+	common_root .. "utils/?.lua;" ..
+	common_root .. "cfg/?.lua"
+lua_cpath = server_root .. "luaclib/?.so"
+snax = server_root.."?.lua;"..business_root.."services/?.lua;"
+		.. business_root .. "ai/?.lua"
+lua_path = 
+root.."?.lua;"..
+business_root.."?/init.lua;"..
+business_root.."lualib/?.lua;"..
+business_root.."?.lua;"..
+business_root.."base/?.lua;"..
+business_root.."class/?.lua;"..
+business_root.."utils/?.lua;"..
+business_root.."conftbl/?.lua;"..
+business_root.."systems/?.lua;"..
+business_root.."config/?.lua;"..
+business_root.."common/?.lua;"..
+business_root.."msgagent_module/?.lua;"..
+business_root.."protos/?.lua;"..
+env_conf_root.."?.lua;"..
+business_root.."extra/?.lua;"..
+business_root.."game/tools/?.lua;"..
+business_root.."services/web/?.lua;"..
+business_root.."sdk/?.lua;"..
+common_root .. "lualib/?.lua;"..
+lua_path
+cpath = server_root .. "cservice/?.so"
+
+certfile = "./certs/" .. env .. "/server-cert.pem"
+keyfile = "./certs/" .. env .. "/server-key.pem"
+
+preload = business_root .. "common/init.lua"
